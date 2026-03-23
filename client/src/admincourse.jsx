@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./course.css";
 
-const NAV_ITEMS = ["Admin", "Test Series", "Results", "About Us"];
-const COURSE_OPTIONS = ["11 NEET", "11 JEE-Advance", "12 NEET", "12 JEE-Advance"];
-const SUBJECT_OPTIONS = ["Physics", "Chemistry", "Mathematics", "Biology"];
+const NAV_ITEMS = ["Home", "Admin", "Test Series", "About Us"];
+const COURSE_OPTIONS = ["11 NEET", "11 JEE-Advance", "12 NEET", "12 JEE-Advance", "NEET Dropper", "JEE Dropper", "Class 7", "Class 8", "Class 9", "Class 10"];
+const SUBJECT_OPTIONS = ["Physics", "Chemistry", "Mathematics", "Biology", "English", "Social Science"];
 
 const FOOTER_GROUPS = [
   {
@@ -71,7 +71,10 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
     if (form.course.includes("NEET")) {
       return ["Physics", "Chemistry", "Biology"];
     }
-    return ["Physics", "Chemistry", "Mathematics"];
+    if (form.course.includes("JEE")) {
+      return ["Physics", "Chemistry", "Mathematics"];
+    }
+    return SUBJECT_OPTIONS;
   }, [form.course]);
 
   function onChange(event) {

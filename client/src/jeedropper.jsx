@@ -1,14 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./course.css";
 
-const SUBJECTS = ["Physics", "Chemistry", "Mathematics"];
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
-
-const SUBJECT_IMAGES = {
-  Physics: "/assets/physics.png",
-  Chemistry: "/assets/chemistry.png",
-  Mathematics: "/assets/mathematics.png",
-};
 
 const FOOTER_GROUPS = [
   {
@@ -30,7 +23,8 @@ const FOOTER_GROUPS = [
 ];
 
 const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Schools", "Legal & Accessibility"];
-function JeeAdvance11({ onBackHome, onBackCourses, onSelectSubject, onOpenPhysics, auth, userName, onLogout, onGoProfile, userAvatar, onLoginClick }) {
+
+function JeeDropper({ onBackHome, onBackCourses, onGoJee11, onGoJee12, auth, userName, onLogout, onGoProfile, userAvatar, onLoginClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const navRef = useRef(null);
@@ -54,24 +48,6 @@ function JeeAdvance11({ onBackHome, onBackCourses, onSelectSubject, onOpenPhysic
       document.removeEventListener("pointerdown", handleClickOutside);
     };
   }, [navOpen]);
-
-  function handleSubjectSelect(subject) {
-    if (!auth) {
-      onLoginClick?.();
-      return;
-    }
-    if (subject === "Physics") {
-      onOpenPhysics?.();
-      return;
-    }
-    if (subject === "Chemistry") {
-      onSelectSubject?.("Chemistry");
-      return;
-    }
-    if (subject === "Mathematics") {
-      onSelectSubject?.("Mathematics");
-    }
-  }
 
   return (
     <div className="course-page">
@@ -161,38 +137,31 @@ function JeeAdvance11({ onBackHome, onBackCourses, onSelectSubject, onOpenPhysic
       )}
 
       <div className="course-shell">
-        <div className="course-track-head">
-        <h1 className="course-title">11 JEE Advance</h1>
+        <div className="course-track-head" style={{ alignItems: 'flex-start' }}>
+          <div>
+            <h1 className="course-title">JEE-Advance Dropper</h1>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '16px', marginBottom: '8px' }}>
+              <button type="button" className="course-user-btn" onClick={onGoJee11} style={{ background: '#473d76', padding: '6px 18px', fontSize: '0.85rem' }}>Class 11</button>
+              <button type="button" className="course-user-btn" onClick={onGoJee12} style={{ background: '#473d76', padding: '6px 18px', fontSize: '0.85rem' }}>Class 12</button>
+            </div>
+          </div>
           <button type="button" className="course-track-back" onClick={onBackCourses} aria-label="Go back">
             <i className="bi bi-arrow-return-left" aria-hidden="true"></i>
           </button>
         </div>
-        <div className="course-grid">
-          {SUBJECTS.map((subject) => (
-            <button
-              key={subject}
-              type="button"
-              className="course-card with-image"
-              onClick={() => handleSubjectSelect(subject)}
-            >
-              <img className="course-card-image" src={SUBJECT_IMAGES[subject]} alt="" aria-hidden="true" />
-              <span className="course-card-text">{subject}</span>
-            </button>
-          ))}
-        </div>
 
         <div style={{
-          background: "linear-gradient(145deg, #1e293b, #0f172a)",
-          border: "1px solid rgba(148, 163, 184, 0.2)",
+          background: "linear-gradient(145deg, #064e3b, #022c22)",
+          border: "1px solid rgba(52, 211, 153, 0.2)",
           borderRadius: "16px",
           padding: "36px 40px",
           margin: "40px 0 20px",
           width: "100%",
           boxSizing: "border-box",
-          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
+          boxShadow: "0 12px 30px rgba(6, 78, 59, 0.3)",
         }}>
           <h3 style={{
-            color: "#6aa7ff",
+            color: "#34d399",
             fontSize: "1.45rem",
             margin: "0 0 16px",
             display: "flex",
@@ -209,7 +178,7 @@ function JeeAdvance11({ onBackHome, onBackCourses, onSelectSubject, onOpenPhysic
             margin: "0 0 24px",
             lineHeight: "1.4"
           }}>
-            <span role="img" aria-label="Blue book">📘</span> Class 11 – Build From the Ground Up
+            <span role="img" aria-label="Fire">🔥</span> Dropper Batch – Your Comeback Year
           </h4>
 
           <div style={{
@@ -221,49 +190,49 @@ function JeeAdvance11({ onBackHome, onBackCourses, onSelectSubject, onOpenPhysic
             gap: "20px"
           }}>
             <p style={{ margin: 0 }}>
-              Your IIT journey begins here. Class 11 is the most crucial phase where strong fundamentals are built, and we ensure you start the right way from day one. At AMIITJEE, we focus on developing a deep understanding of concepts so that students don’t just memorize—they truly master every topic.
+              Didn’t get your desired rank? This is not the end—it’s your second chance to rise stronger. Our Dropper Batch is specially designed for students who are determined to improve, compete, and succeed at the highest level.
             </p>
             <p style={{ margin: 0 }}>
-              Our teaching approach is designed to make learning clear, engaging, and practical. We connect theory with real problem-solving so students gain confidence in tackling even the most challenging JEE Advanced questions.
+              At AMIITJEE, we understand that droppers need a different approach—one that focuses on precision, speed, and continuous improvement. That’s why our program is intensive, structured, and fully focused on maximizing your performance in limited time.
             </p>
             <p style={{ margin: 0 }}>
-              With a perfect balance of concept learning, practice, and revision, we prepare students to stay ahead throughout their preparation journey.
+              We help you analyze past mistakes, rebuild concepts, and develop a winning strategy that ensures measurable progress.
             </p>
 
-            <div style={{ background: "rgba(10, 18, 40, 0.6)", border: "1px solid rgba(106, 167, 255, 0.1)", borderRadius: "16px", padding: "28px" }}>
+            <div style={{ background: "rgba(2, 44, 34, 0.6)", border: "1px solid rgba(52, 211, 153, 0.1)", borderRadius: "16px", padding: "28px" }}>
               <p style={{ margin: "0 0 20px", color: "#e2ebff", fontWeight: "600", fontSize: "1.1rem" }}>
                 <span role="img" aria-label="Lightbulb">💡</span> What You’ll Achieve
               </p>
               <ul style={{ margin: 0, paddingLeft: 0, listStyleType: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
                 <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span role="img" aria-label="Books" style={{ fontSize: "1.4rem" }}>📚</span> 
-                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Strong Fundamentals in PCM</strong> Build a solid base in Physics, Chemistry, and Mathematics that supports advanced learning in later stages.</span>
+                  <span role="img" aria-label="Target" style={{ fontSize: "1.4rem" }}>🎯</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Focused & Intensive Preparation</strong> Study only what matters most with a highly optimized strategy.</span>
                 </li>
                 <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span role="img" aria-label="Rocket" style={{ fontSize: "1.4rem" }}>🚀</span> 
-                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Early Exposure to JEE Advanced</strong> Get familiar with high-level questions from the beginning, reducing exam pressure in the future.</span>
+                  <span role="img" aria-label="Hammer" style={{ fontSize: "1.4rem" }}>🔨</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Concept Strengthening+Advanced</strong> Rebuild weak areas and master high-level problem-solving.</span>
                 </li>
                 <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span role="img" aria-label="Brain" style={{ fontSize: "1.4rem" }}>🧠</span> 
-                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Smart Study Techniques</strong> Learn how to study efficiently, manage time, and approach problems with the right strategy.</span>
+                  <span role="img" aria-label="Notebook" style={{ fontSize: "1.4rem" }}>📓</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Daily Practice Problems (DPPs)</strong> Stay consistent with daily assignments designed for improvement.</span>
                 </li>
                 <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span role="img" aria-label="Gears" style={{ fontSize: "1.4rem" }}>⚙️</span> 
-                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Concept-to-Application Learning</strong> Understand how concepts are applied in real exam scenarios through structured practice.</span>
+                  <span role="img" aria-label="Handshake" style={{ fontSize: "1.4rem" }}>🤝</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Personal Mentorship & Guidance</strong> Get expert support to stay motivated and on track.</span>
                 </li>
                 <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span role="img" aria-label="Chart" style={{ fontSize: "1.4rem" }}>📊</span> 
-                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Regular Tests & Insights</strong> Track your progress with tests and improve continuously with detailed analysis.</span>
+                  <span role="img" aria-label="Paper" style={{ fontSize: "1.4rem" }}>📄</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Full Test Series with Details</strong> Simulate real exams and continuously improve your rank.</span>
                 </li>
               </ul>
             </div>
 
-            <div style={{ background: "rgba(106, 167, 255, 0.08)", padding: "20px", borderRadius: "10px", marginTop: "12px", borderLeft: "4px solid #6aa7ff" }}>
-               <h5 style={{ color: "#6aa7ff", fontSize: "1.15rem", margin: "0 0 10px", display: "flex", alignItems: "center", gap: "8px" }}>
-                 <span role="img" aria-label="Rocket">🚀</span> Start Strong. Stay Ahead.
+            <div style={{ background: "linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 78, 59, 0.05) 100%)", padding: "20px", borderRadius: "10px", marginTop: "12px", borderLeft: "4px solid #10b981", boxShadow: "0 8px 24px rgba(6, 78, 59, 0.2)" }}>
+               <h5 style={{ color: "#34d399", fontSize: "1.15rem", margin: "0 0 10px", display: "flex", alignItems: "center", gap: "8px" }}>
+                 <span role="img" aria-label="Trophy">🏆</span> Turn Your Setback into Success
                </h5>
-               <p style={{ margin: "0 0 6px", color: "#e2ebff" }}>A strong Class 11 foundation can define your entire JEE journey.</p>
-               <p style={{ margin: 0, fontWeight: "700", color: "#ffffff" }}><span role="img" aria-label="Point">👉</span> Join now and take the first step towards your IIT dream.</p>
+               <p style={{ margin: "0 0 6px", color: "#e2ebff" }}>One focused year can change your entire future.</p>
+               <p style={{ margin: 0, fontWeight: "700", color: "#ffffff" }}><span role="img" aria-label="Point">👉</span> Join now and make your comeback count.</p>
             </div>
           </div>
         </div>
@@ -305,5 +274,4 @@ function JeeAdvance11({ onBackHome, onBackCourses, onSelectSubject, onOpenPhysic
   );
 }
 
-export default JeeAdvance11;
-
+export default JeeDropper;

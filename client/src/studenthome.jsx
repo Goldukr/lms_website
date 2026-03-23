@@ -3,7 +3,7 @@ import "./home.css";
 import screenSaverImageOne from "../web design.png";
 import screenSaverImageTwo from "../web2.png";
 
-const NAV_ITEMS = ["Courses", "Test Series", "Results", "About Us"];
+const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
 
 const SCREENSAVER_IMAGES = [screenSaverImageOne, screenSaverImageTwo];
 
@@ -127,7 +127,13 @@ function StudentHome({
               key={item}
               type="button"
               className="home-nav-item"
-              onClick={item === "Courses" ? onExploreCourses : undefined}
+              onClick={
+                item === "Home"
+                  ? onBrandClick
+                  : item === "Courses"
+                    ? onExploreCourses
+                    : undefined
+              }
             >
               {item}
             </button>
@@ -165,6 +171,9 @@ function StudentHome({
                 <button type="button" onClick={onGoProfile || (() => setMenuOpen(false))}>
                   Profile
                 </button>
+                <button type="button" onClick={onBrandClick}>
+                  Home
+                </button>
                 <button type="button" onClick={onGoCourses}>
                   Courses
                 </button>
@@ -183,7 +192,13 @@ function StudentHome({
               key={item}
               type="button"
               className="home-nav-item"
-              onClick={item === "Courses" ? onExploreCourses : undefined}
+              onClick={
+                item === "Home"
+                  ? onBrandClick
+                  : item === "Courses"
+                    ? onExploreCourses
+                    : undefined
+              }
             >
               {item}
             </button>

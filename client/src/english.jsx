@@ -2,20 +2,20 @@ import { useEffect, useState } from "react";
 import "./course.css";
 
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
-
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
-function Chemistry({ onBackHome, onBackCourses, courseLabel = "11 NEET", courseQuery = "11 NEET" , auth, userName, userAvatar, onLogout, onGoProfile, onLoginClick}) {
+function English({ onBackHome, onBackCourses, courseLabel = "Class 7", courseQuery = "Class 7" , auth, userName, userAvatar, onLogout, onGoProfile, onLoginClick}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notes, setNotes] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/notes?course=${encodeURIComponent(courseQuery)}&subject=Chemistry`)
+    fetch(`${API_BASE}/api/notes?course=${encodeURIComponent(courseQuery)}&subject=English`)
       .then((response) => response.json())
       .then((data) => setNotes(Array.isArray(data) ? data : []))
       .catch(() => setError("Failed to load notes."));
   }, [courseQuery]);
+
   return (
     <div className="course-page">
       <header className="course-topbar">
@@ -91,7 +91,7 @@ function Chemistry({ onBackHome, onBackCourses, courseLabel = "11 NEET", courseQ
 
       <div className="course-shell">
         <div className="course-track-head">
-          <h1 className="course-title">{courseLabel} - Chemistry</h1>
+          <h1 className="course-title">{courseLabel} - English</h1>
           <button type="button" className="course-track-back" onClick={onBackCourses} aria-label="Go back">
             <i className="bi bi-arrow-return-left" aria-hidden="true"></i>
           </button>
@@ -100,7 +100,7 @@ function Chemistry({ onBackHome, onBackCourses, courseLabel = "11 NEET", courseQ
         {notes.length === 0 && !error && <p>No notes uploaded yet.</p>}
         {notes.length > 0 && (
           <div className="course-notes">
-            <h2 className="course-notes-title">Chemistry Notes</h2>
+            <h2 className="course-notes-title">English Notes</h2>
             <div className="course-table">
               <div className="course-table-row course-table-header">
                 <span>Chapter</span>
@@ -127,4 +127,4 @@ function Chemistry({ onBackHome, onBackCourses, courseLabel = "11 NEET", courseQ
   );
 }
 
-export default Chemistry;
+export default English;

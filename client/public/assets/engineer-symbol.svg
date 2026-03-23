@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title>Engineer Symbol</title>
+  <rect width="240" height="240" fill="none"/>
+  <g transform="translate(10 8) scale(0.92)">
+    <path fill="#1ea3ea" d="M120 26l11 20 23-4 3 22 22 8-7 22 17 16-16 16 7 22-22 8-3 22-23-4-11 20-11-20-23 4-3-22-22-8 7-22-17-16 17-16-7-22 22-8 3-22 23 4 11-20z"/>
+    <circle cx="120" cy="120" r="56" fill="#ffffff"/>
+    <circle cx="120" cy="120" r="46" fill="none" stroke="#1ea3ea" stroke-width="8"/>
+    <path d="M120 76c-18 0-34 15-34 33 0 13 6 22 14 31 7 7 12 13 12 22h16c0-9 5-15 12-22 8-9 14-18 14-31 0-18-16-33-34-33z" fill="#ffffff"/>
+    <path d="M112 112h16l-9 24h11l-21 34 6-23h-10l7-35z" fill="#ff9a1f"/>
+    <path d="M111 168h18v8h-18z" fill="#1ea3ea"/>
+    <path d="M114 179h12v6h-12z" fill="#1ea3ea"/>
+    <path d="M164 82c-11-12-27-20-44-20-22 0-42 12-52 30" fill="none" stroke="#ff8f1f" stroke-width="10" stroke-linecap="round"/>
+    <path d="M154 95c-6-12-19-21-34-21-19 0-35 13-39 31" fill="none" stroke="#1ea3ea" stroke-width="7" stroke-linecap="round"/>
+    <path d="M83 111c-1 3-1 7-1 10" fill="none" stroke="#1ea3ea" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>

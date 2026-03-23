@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./course.css";
 
 const SUBJECTS = ["Physics", "Chemistry", "Biology"];
-const NAV_ITEMS = ["Courses", "Test Series", "Results", "About Us"];
+const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
 
 const SUBJECT_IMAGES = {
   Physics: "/assets/physics.png",
@@ -30,62 +30,47 @@ const FOOTER_GROUPS = [
 ];
 
 const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Schools", "Legal & Accessibility"];
-
-function Neet11({ onBackHome, onBackCourses, onSelectSubject, auth, userName, onLogout, onGoProfile, userAvatar }) {
-  const [showPhysicsForm, setShowPhysicsForm] = useState(false);
-  const [chapterName, setChapterName] = useState("");
-  const [noteFile, setNoteFile] = useState(null);
-  const isAdmin = auth?.role === "admin";
+function Neet11({ onBackHome, onBackCourses, onSelectSubject, onOpenPhysics, auth, userName, onLogout, onGoProfile, userAvatar, onLoginClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+  const [navOpen, setNavOpen] = useState(false);
+  const navRef = useRef(null);
+  const toggleRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
+      if (!navOpen) return;
+      const dropdown = navRef.current;
+      const toggle = toggleRef.current;
+      if (dropdown && dropdown.contains(event.target)) return;
+      if (toggle && toggle.contains(event.target)) return;
+      setNavOpen(false);
     }
 
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+    if (navOpen) {
+      document.addEventListener("pointerdown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("pointerdown", handleClickOutside);
     };
-  }, [menuOpen]);
+  }, [navOpen]);
 
-  function onPhysicsClick() {
-    if (isAdmin) {
-      setShowPhysicsForm(true);
-    } else {
-      onSelectSubject?.("Physics");
+  function handleSubjectSelect(subject) {
+    if (!auth) {
+      onLoginClick?.();
+      return;
     }
-  }
-
-  function onFileChange(event) {
-    const file = event.target.files?.[0] || null;
-    setNoteFile(file);
-  }
-
-  function onSubmit(event) {
-    event.preventDefault();
-    if (!chapterName.trim() || !noteFile) return;
-
-    const objectUrl = URL.createObjectURL(noteFile);
-    const noteId = `${Date.now()}-${noteFile.name}`;
-    setNotes((prev) => [
-      {
-        id: noteId,
-        chapter: chapterName.trim(),
-        fileName: noteFile.name,
-        fileUrl: objectUrl,
-      },
-      ...prev,
-    ]);
-    setChapterName("");
-    setNoteFile(null);
-    setShowPhysicsForm(false);
+    if (subject === "Physics") {
+      onOpenPhysics?.();
+      return;
+    }
+    if (subject === "Chemistry") {
+      onSelectSubject?.("Chemistry");
+      return;
+    }
+    if (subject === "Biology") {
+      onSelectSubject?.("Biology");
+    }
   }
 
   return (
@@ -102,59 +87,93 @@ function Neet11({ onBackHome, onBackCourses, onSelectSubject, auth, userName, on
               key={item}
               type="button"
               className="course-nav-item"
-              onClick={item === "Courses" ? onBackCourses : onBackHome}
+              onClick={item === "Courses" ? (typeof handleCoursesClick !== 'undefined' ? handleCoursesClick : (typeof onBackCourses !== 'undefined' ? onBackCourses : onBackHome)) : onBackHome}
             >
               {item}
             </button>
           ))}
         </nav>
+        <button
+          type="button"
+          className="course-nav-toggle"
+          onClick={() => setNavOpen((prev) => !prev)}
+          aria-expanded={typeof navOpen !== 'undefined' ? navOpen : false}
+          aria-label="Toggle menu"
+          ref={typeof toggleRef !== 'undefined' ? toggleRef : null}
+        >
+          <i className="bi bi-justify" aria-hidden="true"></i>
+        </button>
 
         <div className="course-actions">
-          <div className="course-user" ref={menuRef}>
-            <button type="button" className="course-user-btn" onClick={() => setMenuOpen((prev) => !prev)}>
-              {userAvatar ? (
-                <img src={userAvatar} alt="Profile" className="course-user-avatar" />
-              ) : (
-                <span className="course-user-icon" aria-hidden="true">
-                  <svg viewBox="0 0 16 16" aria-hidden="true">
-                    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0Zm0 4.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Zm0 10.5a6.5 6.5 0 0 1-5.385-2.857C3.67 10.566 5.522 9.5 8 9.5c2.478 0 4.33 1.066 5.385 2.643A6.5 6.5 0 0 1 8 15Z" />
-                  </svg>
-                </span>
+          {typeof auth !== 'undefined' && auth ? (
+            <div className="course-user">
+              <button
+                type="button"
+                className="course-user-btn"
+                onClick={() => setMenuOpen((prev) => !prev)}
+              >
+                {typeof userAvatar !== 'undefined' && userAvatar ? (
+                  <img className="course-user-avatar" src={userAvatar} alt="" />
+                ) : (
+                  <span className="course-user-icon">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z" />
+                    </svg>
+                  </span>
+                )}
+                {(typeof userName !== 'undefined' && userName) || "Profile"}
+              </button>
+              {typeof menuOpen !== 'undefined' && menuOpen && (
+                <div className="course-user-menu">
+                  <button type="button" onClick={typeof onGoProfile !== 'undefined' ? onGoProfile : (() => setMenuOpen(false))}>
+                    Profile
+                  </button>
+                  <button type="button" onClick={typeof onBackHome !== 'undefined' ? onBackHome : (() => setMenuOpen(false))}>
+                    Home
+                  </button>
+                  <button type="button" onClick={typeof handleCoursesClick !== 'undefined' ? handleCoursesClick : (typeof onBackCourses !== 'undefined' ? onBackCourses : (() => setMenuOpen(false)))}>
+                    Courses
+                  </button>
+                  <button type="button" onClick={typeof onLogout !== 'undefined' ? onLogout : (() => setMenuOpen(false))}>
+                    Log Out
+                  </button>
+                </div>
               )}
-              {userName || "Student"}
-            </button>
-            {menuOpen && (
-              <div className="course-user-menu">
-                <button type="button" onClick={onBackHome}>
-                  Home
-                </button>
-                <button type="button" onClick={onGoProfile}>
-                  Profile
-                </button>
-                <button type="button" onClick={onLogout}>
-                  Log Out
-                </button>
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <button type="button" className="course-user-btn" onClick={typeof onLoginClick !== 'undefined' ? onLoginClick : (() => window.location.href = '/')}>Login</button>
+          )}
         </div>
       </header>
+      {navOpen && (
+        <div className="course-nav-dropdown" ref={navRef}>
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className="course-nav-item"
+              onClick={item === "Courses" ? onBackCourses : onBackHome}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="course-shell">
+        <div className="course-track-head">
         <h1 className="course-title">11 NEET</h1>
+          <button type="button" className="course-track-back" onClick={onBackCourses} aria-label="Go back">
+            <i className="bi bi-arrow-return-left" aria-hidden="true"></i>
+          </button>
+        </div>
         <div className="course-grid">
           {SUBJECTS.map((subject) => (
             <button
               key={subject}
               type="button"
               className="course-card with-image"
-              onClick={
-                subject === "Physics"
-                  ? onPhysicsClick
-                  : () => {
-                      if (!isAdmin) onSelectSubject?.(subject);
-                    }
-              }
+              onClick={() => handleSubjectSelect(subject)}
             >
               <img className="course-card-image" src={SUBJECT_IMAGES[subject]} alt="" aria-hidden="true" />
               <span className="course-card-text">{subject}</span>
@@ -162,37 +181,109 @@ function Neet11({ onBackHome, onBackCourses, onSelectSubject, auth, userName, on
           ))}
         </div>
 
-        {showPhysicsForm && (
-          <div className="course-modal" onClick={() => setShowPhysicsForm(false)}>
-            <div className="course-modal-card" onClick={(event) => event.stopPropagation()}>
-              <h2>Upload Physics Notes</h2>
-              <form className="course-form" onSubmit={onSubmit}>
-                <label htmlFor="chapter-name">Chapter Name</label>
-                <input
-                  id="chapter-name"
-                  type="text"
-                  value={chapterName}
-                  onChange={(event) => setChapterName(event.target.value)}
-                  placeholder="Enter chapter name"
-                  required
-                />
+        <div style={{
+          background: "linear-gradient(145deg, #064e3b, #022c22)",
+          border: "1px solid rgba(52, 211, 153, 0.2)",
+          borderRadius: "16px",
+          padding: "36px 40px",
+          margin: "40px 0 20px",
+          width: "100%",
+          boxSizing: "border-box",
+          boxShadow: "0 10px 25px rgba(6, 78, 59, 0.3)",
+        }}>
+          <h3 style={{
+            color: "#34d399",
+            fontSize: "1.45rem",
+            margin: "0 0 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            fontWeight: "800",
+          }}>
+            <span role="img" aria-label="Target" style={{ fontSize: "1.6rem" }}>🎯</span> Choose Your Path
+          </h3>
+          <h4 style={{
+            color: "#ffffff",
+            fontSize: "1.2rem",
+            fontWeight: "700",
+            margin: "0 0 24px",
+            lineHeight: "1.4"
+          }}>
+            <span role="img" aria-label="Blue book">📘</span> Class 11 – Build Strong Fundamentals
+          </h4>
 
-                <label htmlFor="note-file">Upload Notes</label>
-                <input id="note-file" type="file" onChange={onFileChange} required />
+          <div style={{
+            color: "#94a3b8",
+            fontSize: "1rem",
+            lineHeight: "1.7",
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px"
+          }}>
+            <p style={{ margin: 0 }}>
+              Your journey towards becoming a doctor starts in Class 11—the most important phase where your core concepts are built. A strong foundation at this stage makes the entire NEET preparation smoother, faster, and more effective.
+            </p>
+            <p style={{ margin: 0 }}>
+              At AMITJEE Career Institute, we ensure that every student develops a deep and clear understanding of concepts from the very beginning. Instead of rote memorization, we focus on concept-based learning, so students can confidently apply what they learn in any type of question.
+            </p>
+            <p style={{ margin: 0 }}>
+              Our approach is strongly aligned with NCERT, especially for Biology, which is the most scoring subject in NEET. Along with that, we simplify complex topics in Physics and Chemistry to make them easy to understand, retain, and apply.
+            </p>
+            <p style={{ margin: 0 }}>
+              We combine theory, practice, and revision in a structured way so that students not only learn concepts but also build accuracy and confidence through continuous practice.
+            </p>
 
-                <div className="course-form-actions">
-                  <button type="button" className="secondary-btn" onClick={() => setShowPhysicsForm(false)}>
-                    Cancel
-                  </button>
-                  <button type="submit" className="primary-btn">
-                    Submit
-                  </button>
-                </div>
-              </form>
+            <div style={{ background: "rgba(2, 44, 34, 0.6)", border: "1px solid rgba(52, 211, 153, 0.1)", borderRadius: "16px", padding: "28px" }}>
+              <p style={{ margin: "0 0 20px", color: "#e2ebff", fontWeight: "600", fontSize: "1.1rem" }}>
+                <span role="img" aria-label="Lightbulb">💡</span> What You’ll Achieve
+              </p>
+              <ul style={{ margin: 0, paddingLeft: 0, listStyleType: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span role="img" aria-label="Check" style={{ fontSize: "1.4rem" }}>✔</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Strong Foundation in PCB</strong> Build clear and solid fundamentals that support advanced learning in Class 12 and beyond.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span role="img" aria-label="Check" style={{ fontSize: "1.4rem" }}>✔</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Complete NCERT Coverage</strong> Understand every line, diagram, and concept from NCERT—especially crucial for Biology.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span role="img" aria-label="Check" style={{ fontSize: "1.4rem" }}>✔</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Early Exposure to NEET MCQs</strong> Start solving exam-pattern questions early to reduce pressure later.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span role="img" aria-label="Check" style={{ fontSize: "1.4rem" }}>✔</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Better Understanding & Retention</strong> Learn techniques that help you remember concepts effectively for the exam.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span role="img" aria-label="Check" style={{ fontSize: "1.4rem" }}>✔</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Regular Tests & Tracking</strong> Evaluate your progress with chapter-wise tests and improve continuously.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span role="img" aria-label="Check" style={{ fontSize: "1.4rem" }}>✔</span> 
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Concept-to-Application</strong> Understand how theoretical knowledge is applied in real NEET questions.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div style={{
+              background: "linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 78, 59, 0.05) 100%)",
+              padding: "24px 32px",
+              borderRadius: "14px",
+              marginTop: "16px",
+              borderLeft: "4px solid #10b981",
+              boxShadow: "0 8px 24px rgba(6, 78, 59, 0.2)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px"
+            }}>
+               <h5 style={{ color: "#34d399", fontSize: "1.2rem", margin: 0, display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "0.03em", fontWeight: "800" }}>
+                 <span role="img" aria-label="Rocket">🚀</span> Build Strong Today for a Better Tomorrow
+               </h5>
+               <p style={{ margin: "0 0 4px", color: "#e2ebff", fontSize: "1.1rem" }}>A solid Class 11 foundation is the key to cracking NEET with confidence.</p>
+               <p style={{ margin: "4px 0 0", fontWeight: "800", color: "#ffffff", fontSize: "1.15rem", display: "flex", alignItems: "center", gap: "8px" }}><span role="img" aria-label="Point">👉</span> Start your preparation the right way with AMITJEE.</p>
             </div>
           </div>
-        )}
-
+        </div>
       </div>
 
       <footer className="course-footer">
@@ -232,3 +323,4 @@ function Neet11({ onBackHome, onBackCourses, onSelectSubject, auth, userName, on
 }
 
 export default Neet11;
+

@@ -3,14 +3,36 @@ import "./home.css";
 import screenSaverImageOne from "../web design.png";
 import screenSaverImageTwo from "../web2.png";
 
-const NAV_ITEMS = [
-  "Courses",
-  "Test Series",
-  "Results",
-  "About Us",
-];
+
+const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
 
 const SCREENSAVER_IMAGES = [screenSaverImageOne, screenSaverImageTwo];
+const PROGRAM_CARDS = [
+  {
+    title: "JEE-Advance",
+    icon: "/assets/jee-new.png",
+    iconClassName: "home-program-icon-engineering",
+    classes: ["Class 11th", "Class 12th", "Dropper"],
+    description: "Your First Step Towards Becoming an enginneer",
+    tone: "jee",
+  },
+  {
+    title: "NEET-UG",
+    icon: "/assets/neet-new.png",
+    iconClassName: "home-program-icon-medical",
+    classes: ["Class 11th", "Class 12th", "Dropper"],
+    description: "Your First Step Towards Becoming a Doctor",
+    tone: "neet",
+  },
+  {
+    title: "Foundation",
+    icon: "/assets/foundation.png",
+    iconClassName: "home-program-icon-foundation",
+    classes: ["Class 7th", "Class 8th", "Class 9th", "Class 10th"],
+    description: "Build Your Strong Base with our Experts",
+    tone: "foundation",
+  },
+];
 
 const FOOTER_GROUPS = [
   {
@@ -94,6 +116,36 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
     };
   }, [navOpen]);
 
+  function renderProgramIcon(program) {
+    if (!program.icon) return null;
+
+    return (
+      <span className={`home-program-icon home-program-icon-graphic ${program.iconClassName || ""}`.trim()} aria-hidden="true">
+        <img src={program.icon} alt="" />
+      </span>
+    );
+  }
+
+  function getClassCourseTarget(programTone, classItem) {
+    const classKey = String(classItem || "").toLowerCase();
+    if (programTone === "jee") {
+      if (classKey.includes("11")) return "11 jee-advanced";
+      if (classKey.includes("12")) return "12 jee-advanced";
+      if (classKey.includes("dropper")) return "jee dropper";
+      return "jee-advanced";
+    }
+    if (programTone === "neet") {
+      if (classKey.includes("11")) return "11 neet";
+      if (classKey.includes("12")) return "12 neet";
+      if (classKey.includes("dropper")) return "neet dropper";
+      return "neet-ug";
+    }
+    if (programTone === "foundation") {
+      return "foundation";
+    }
+    return "";
+  }
+
   return (
     <div className="home-page">
       <div className="home-bg home-bg-a" />
@@ -112,7 +164,11 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
               key={item}
               type="button"
               className="home-nav-item"
-              onClick={item === "Courses" ? onExploreCourses : undefined}
+              onClick={() => {
+                if (item === "Home") onBrandClick();
+                else if (item === "Courses") onExploreCourses("");
+                else if (item === "About Us") document.getElementById("about-us")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
             >
               {item}
             </button>
@@ -126,7 +182,7 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
           aria-label="Toggle menu"
           ref={toggleRef}
         >
-          Menu
+          <i className="bi bi-justify" aria-hidden="true"></i>
         </button>
 
         <div className="home-actions">
@@ -155,7 +211,12 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
               key={item}
               type="button"
               className="home-nav-item"
-              onClick={item === "Courses" ? onExploreCourses : undefined}
+              onClick={() => {
+                if (item === "Home") onBrandClick();
+                else if (item === "Courses") onExploreCourses("");
+                else if (item === "About Us") document.getElementById("about-us")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                setNavOpen(false);
+              }}
             >
               {item}
             </button>
@@ -175,14 +236,74 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
           />
         ))}
         <div className="home-screensaver-cta">
-          <button type="button" className="home-screensaver-button" onClick={onExploreCourses}>
+          <button type="button" className="home-screensaver-button" onClick={() => onExploreCourses("")}>
             Explore Courses
           </button>
         </div>
       </section>
 
+      <section className="home-programs" aria-label="Program highlights">
+        <div className="home-program-grid">
+          {PROGRAM_CARDS.map((program) => (
+            <article
+              key={program.title}
+              className={`home-program-card home-program-${program.tone}`}
+            >
+              {renderProgramIcon(program)}
+              <h2>{program.title}</h2>
+              <div className="home-program-pills">
+                {program.classes.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className="home-program-pill"
+                    onClick={() => onExploreCourses(getClassCourseTarget(program.tone, item))}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+              <p>{program.description}</p>
+              <button
+                type="button"
+                className="home-program-btn"
+                onClick={() => {
+                  const target = program.tone === "jee" ? "jee-advanced" : program.tone === "neet" ? "neet-ug" : "foundation";
+                  onExploreCourses(target);
+                }}
+              >
+                Explore Now to Understand better
+              </button>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="home-quote-section" aria-label="Inspirational Quote">
+        <div className="home-quote-container">
+          <div className="home-quote-content">
+            <blockquote className="home-quote-block">
+              <p className="home-quote-text">
+                “Education is the most powerful weapon which you can use to change the world.”
+              </p>
+              <footer className="home-quote-author">
+                — <cite>Dr. A. P. J. Abdul Kalam</cite>
+              </footer>
+            </blockquote>
+          </div>
+          <div className="home-quote-image-wrapper">
+            <img src="/assets/dr apj abdul kalam.png" alt="Dr. A. P. J. Abdul Kalam" className="home-quote-image" />
+          </div>
+        </div>
+      </section>
+
       <main className="home-main">
         <section className="home-hero">
+          <article className="home-float-card home-float-main">
+            <h2>Prep smarter with AMIITJEE Online Test Series</h2>
+            <p>Adaptive practice tracks your weak zones and boosts your score path.</p>
+          </article>
+
           <div className="home-left">
             <h1>
               NEET and JEE Self-Study Courses <br />
@@ -196,67 +317,187 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
             </ul>
           </div>
 
-          <div className="home-right">
-            <article className="home-float-card home-float-main">
-              <h2>Prep smarter with AMIITJEE Online Test Series</h2>
-              <p>Adaptive practice tracks your weak zones and boosts your score path.</p>
-            </article>
+          <article className="home-enquiry-card">
+            <h3>Enquiry</h3>
+            <form className="home-enquiry-form" onSubmit={onQuerySubmit}>
+              <label htmlFor="enquiry-name">Name</label>
+              <input
+                id="enquiry-name"
+                name="name"
+                type="text"
+                placeholder="Enter your name"
+                value={queryForm.name}
+                onChange={onQueryChange}
+                required
+              />
 
-            <article className="home-enquiry-card">
-              <h3>Enquiry</h3>
-              <form className="home-enquiry-form" onSubmit={onQuerySubmit}>
-                <label htmlFor="enquiry-name">Name</label>
-                <input
-                  id="enquiry-name"
-                  name="name"
-                  type="text"
-                  placeholder="Enter your name"
-                  value={queryForm.name}
-                  onChange={onQueryChange}
-                  required
-                />
+              <label htmlFor="enquiry-email">Email</label>
+              <input
+                id="enquiry-email"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                value={queryForm.email}
+                onChange={onQueryChange}
+                required
+              />
 
-                <label htmlFor="enquiry-email">Email</label>
-                <input
-                  id="enquiry-email"
-                  name="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={queryForm.email}
-                  onChange={onQueryChange}
-                  required
-                />
+              <label htmlFor="enquiry-mobile">Mobile Number</label>
+              <input
+                id="enquiry-mobile"
+                name="mobile"
+                type="tel"
+                placeholder="Enter your mobile number"
+                value={queryForm.mobile}
+                onChange={onQueryChange}
+                inputMode="numeric"
+                pattern="[0-9]{10}"
+                required
+              />
 
-                <label htmlFor="enquiry-mobile">Mobile Number</label>
-                <input
-                  id="enquiry-mobile"
-                  name="mobile"
-                  type="tel"
-                  placeholder="Enter your mobile number"
-                  value={queryForm.mobile}
-                  onChange={onQueryChange}
-                  inputMode="numeric"
-                  pattern="[0-9]{10}"
-                  required
-                />
+              <label htmlFor="enquiry-query">Query</label>
+              <textarea
+                id="enquiry-query"
+                name="query"
+                placeholder="Write your query"
+                value={queryForm.query}
+                onChange={onQueryChange}
+                required
+              ></textarea>
 
-                <label htmlFor="enquiry-query">Query</label>
-                <textarea
-                  id="enquiry-query"
-                  name="query"
-                  placeholder="Write your query"
-                  value={queryForm.query}
-                  onChange={onQueryChange}
-                  required
-                ></textarea>
+              {queryStatus && <p className="home-enquiry-status">{queryStatus}</p>}
+              <button type="submit" className="home-enquiry-submit">Submit</button>
+            </form>
+          </article>
 
-                {queryStatus && <p className="home-enquiry-status">{queryStatus}</p>}
-                <button type="submit" className="home-enquiry-submit">Submit</button>
-              </form>
-            </article>
-          </div>
+          <section className="home-map-card" aria-labelledby="home-map-title">
+            <div className="home-map-copy">
+              <p className="home-map-eyebrow">Visit Us</p>
+              <h3 id="home-map-title">Find AMIITJEE on Google Maps</h3>
+              <p>Use the map below to view the institute location and open directions easily.</p>
+            </div>
+            <div className="home-map-frame">
+              <iframe
+                title="AMIITJEE Career Institute location"
+                src="https://www.google.com/maps?q=AMIITJEE%20Career%20Institute&z=15&output=embed"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </section>
         </section>
       </main>
+
+      <section id="about-us" className="home-about-us" style={{
+        backgroundColor: "#e2ecf5",
+        borderTop: "1px solid rgba(148, 163, 184, 0.2)",
+        borderBottom: "1px solid rgba(148, 163, 184, 0.2)",
+        padding: "60px 40px",
+        margin: "60px 0",
+        width: "100%",
+        boxSizing: "border-box",
+        boxShadow: "0 10px 40px rgba(15, 23, 42, 0.08)",
+        color: "#334155"
+      }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <h3 style={{ color: "#1e40af", fontSize: "1.6rem", margin: "0 0 16px", display: "flex", alignItems: "center", gap: "12px", fontWeight: "800" }}>
+            <span role="img" aria-label="Teacher" style={{ fontSize: "1.8rem" }}>👨‍🏫</span> About Us
+          </h3>
+          <h4 style={{ color: "#0f172a", fontSize: "1.3rem", fontWeight: "700", margin: "0 0 24px", lineHeight: "1.4" }}>
+            Shaping Futures. Building Success Stories.
+          </h4>
+          
+          <p style={{ margin: "0 0 16px", fontSize: "1.05rem", lineHeight: "1.7", color: "#334155" }}>
+            At AMITJEE Career Institute, we are committed to transforming students’ dreams into reality by providing quality education, expert guidance, and a result-oriented approach. Our mission is to help aspiring students crack competitive exams like JEE Advanced, NEET-UG, and other academic challenges with confidence and excellence.
+          </p>
+          <p style={{ margin: "0 0 32px", fontSize: "1.05rem", lineHeight: "1.7", color: "#334155" }}>
+            We believe that success is not just about hard work—it’s about learning smart, staying consistent, and having the right mentorship. That’s why our teaching methodology focuses on concept clarity, practical understanding, and continuous improvement, ensuring that every student reaches their full potential.
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px", marginBottom: "32px" }}>
+            <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
+              <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 12px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <span role="img" aria-label="Target">🎯</span> Our Vision
+              </h5>
+              <p style={{ margin: 0, fontSize: "1rem", lineHeight: "1.7", color: "#475569" }}>
+                To become a leading institute that empowers students with knowledge, skills, and confidence to excel in competitive exams and achieve their career goals.
+              </p>
+            </div>
+
+            <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
+              <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 16px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <span role="img" aria-label="Rocket">🚀</span> Our Mission
+              </h5>
+              <ul style={{ margin: 0, paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "10px", fontSize: "1rem", lineHeight: "1.6", color: "#475569" }}>
+                <li>To provide high-quality, concept-based education</li>
+                <li>To create a supportive and motivating learning environment</li>
+                <li>To help students develop analytical thinking and problem-solving skills</li>
+                <li>To guide every student with personal attention and mentorship</li>
+              </ul>
+            </div>
+          </div>
+
+          <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "32px", marginBottom: "32px", boxShadow: "0 4px 12px rgba(15, 23, 42, 0.05)" }}>
+            <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 20px", display: "flex", alignItems: "center", gap: "10px" }}>
+              <span role="img" aria-label="Lightbulb">💡</span> What Makes Us Different
+            </h5>
+            <ul style={{ margin: 0, paddingLeft: 0, listStyleType: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
+                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span> 
+                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Experienced Faculty</strong> Learn from experts with strong academic backgrounds</span>
+              </li>
+              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
+                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span> 
+                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Structured Learning</strong> Well-planned syllabus and study material</span>
+              </li>
+              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
+                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span> 
+                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Regular Tests & Analysis</strong> Track performance and improve continuously</span>
+              </li>
+              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
+                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span> 
+                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Doubt Support</strong> Quick and effective doubt-solving sessions</span>
+              </li>
+              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
+                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span> 
+                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Student-Centric Approach</strong> Focused on individual growth and success</span>
+              </li>
+            </ul>
+          </div>
+
+          <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
+            <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 12px", display: "flex", alignItems: "center", gap: "10px" }}>
+              <span role="img" aria-label="Trophy">🏆</span> Our Commitment
+            </h5>
+            <p style={{ margin: 0, fontSize: "1rem", lineHeight: "1.7", color: "#475569" }}>
+              We are not just an institute—we are a partner in your journey. From building strong fundamentals to achieving top ranks, we stand with our students at every step, guiding them towards success.
+            </p>
+          </div>
+
+          <div style={{
+            background: "linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%)",
+            padding: "24px 32px",
+            borderRadius: "14px",
+            marginTop: "32px",
+            borderLeft: "4px solid #1e40af",
+            boxShadow: "0 8px 32px rgba(15, 23, 42, 0.05)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px"
+          }}>
+            <h5 style={{ color: "#1e40af", fontSize: "1.2rem", margin: 0, display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "0.03em", fontWeight: "800" }}>
+              <span role="img" aria-label="Graduation Cap">🎓</span> Your Dream. Our Responsibility.
+            </h5>
+            <p style={{ margin: "0 0 4px", color: "#334155", fontSize: "1.1rem" }}>
+              At AMITJEE, your success is our priority.
+            </p>
+            <p style={{ margin: "4px 0 0", fontWeight: "800", color: "#0f172a", fontSize: "1.15rem", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span role="img" aria-label="Point">👉</span> Join us and take the first step towards a brighter future.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <footer className="home-footer">
         <div className="home-footer-shell">
