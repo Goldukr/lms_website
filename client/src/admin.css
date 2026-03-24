@@ -89,6 +89,21 @@
   box-shadow: 0 20px 40px rgba(6, 10, 18, 0.4);
 }
 
+.admin-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.admin-card-spacer {
+  min-height: 1px;
+}
+
+.admin-approve-all-btn {
+  margin-left: auto;
+}
+
 .admin-actions-cell {
   display: flex;
   gap: 8px;

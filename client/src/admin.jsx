@@ -61,6 +61,32 @@ function AdminPanel({ token, onLogout, onBackHome }) {
     }
   }
 
+  async function approveAllStudents() {
+    setActionError("");
+    try {
+      const response = await fetch("/api/admin/students/approve-all", {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setActionError(data?.error || "Failed to approve all students.");
+        return;
+      }
+      setStudents((prev) =>
+        prev.map((item) =>
+          item.role === "student" && item.status !== "approved"
+            ? { ...item, status: "approved" }
+            : item
+        )
+      );
+    } catch (_error) {
+      setActionError("Failed to approve all students.");
+    }
+  }
+
   async function deleteStudent(id) {
     setActionError("");
     try {
@@ -105,6 +131,10 @@ function AdminPanel({ token, onLogout, onBackHome }) {
   useEffect(() => {
     loadStudents();
   }, [token]);
+
+  const pendingStudentsCount = students.filter(
+    (item) => item.role === "student" && item.status !== "approved"
+  ).length;
 
 
   return (
@@ -154,6 +184,19 @@ function AdminPanel({ token, onLogout, onBackHome }) {
         </header>
 
         <main className="admin-card">
+          <div className="admin-card-head">
+            <div className="admin-card-spacer" />
+            {pendingStudentsCount > 0 && (
+              <button
+                type="button"
+                className="primary-btn admin-approve-all-btn"
+                onClick={approveAllStudents}
+                disabled={loading}
+              >
+                Approve All
+              </button>
+            )}
+          </div>
           {loading && <p className="admin-status">Loading users...</p>}
           {error && <p className="form-error">{error}</p>}
 

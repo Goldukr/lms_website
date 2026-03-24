@@ -171,6 +171,47 @@ body {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
+.password-field {
+  position: relative;
+  width: 100%;
+}
+
+.password-field input {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #d9b1cb;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.password-toggle:hover {
+  color: #ffffff;
+  background: rgba(83, 212, 255, 0.12);
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid rgba(95, 213, 255, 0.9);
+  outline-offset: 2px;
+}
+
+.password-toggle i {
+  font-size: 1rem;
+  line-height: 1;
+}
+
 
 .signin-form select {
   background: #000000;
@@ -413,7 +454,6 @@ body {
 .signup-link:hover {
   text-decoration: underline;
 }
-
 
 
 

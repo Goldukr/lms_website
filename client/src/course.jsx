@@ -104,6 +104,11 @@ function Course({ onBackHome, onBackCourses, onSelectNeet11, onSelectNeet12, onS
   }
 
   function onTrackClassSelect(classKey) {
+    if (!auth) {
+      onLoginClick?.();
+      return;
+    }
+
     if (activeTrack === "neet-ug") {
       if (classKey === "class-11") {
         onSelectNeet11?.();
@@ -809,9 +814,4 @@ function Course({ onBackHome, onBackCourses, onSelectNeet11, onSelectNeet12, onS
 }
 
 export default Course;
-
-
-
-
-
 

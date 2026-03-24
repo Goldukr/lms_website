@@ -9,6 +9,8 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [form, setForm] = useState({
     name: "",
     mobile: "",
@@ -30,9 +32,18 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
 
   function onRoleChange(nextRole) {
     setRole(nextRole);
-    if (nextRole === "admin") {
-      setForm((prev) => ({ ...prev, course: "" }));
-    }
+    setForm({
+      name: "",
+      mobile: "",
+      email: "",
+      course: "",
+      password: "",
+      confirmPassword: "",
+    });
+    setSubmitError("");
+    setSubmitSuccess("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
   }
 
   const passwordMismatch = useMemo(() => {
@@ -77,6 +88,16 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
       }
 
       setSubmitSuccess("Successfully signed up.");
+      setForm({
+        name: "",
+        mobile: "",
+        email: "",
+        course: "",
+        password: "",
+        confirmPassword: "",
+      });
+      setShowPassword(false);
+      setShowConfirmPassword(false);
     } catch (error) {
       setSubmitError("Signup failed. Please try again.");
     } finally {
@@ -191,15 +212,26 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
             />
 
             <label htmlFor="signup-password">Password</label>
-            <input
-              id="signup-password"
-              name="password"
-              type="password"
-              placeholder="Create your password"
-              value={form.password}
-              onChange={onChange}
-              required
-            />
+            <div className="password-field">
+              <input
+                id="signup-password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Create your password"
+                value={form.password}
+                onChange={onChange}
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
+                <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} aria-hidden="true"></i>
+              </button>
+            </div>
             {passwordInvalid && (
               <p className="form-error">
                 Password must be at least 9 characters with 1 uppercase letter, 1 number, and 1 special symbol.
@@ -207,15 +239,26 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
             )}
 
             <label htmlFor="signup-confirm-password">Confirm Password</label>
-            <input
-              id="signup-confirm-password"
-              name="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              value={form.confirmPassword}
-              onChange={onChange}
-              required
-            />
+            <div className="password-field">
+              <input
+                id="signup-confirm-password"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm your password"
+                value={form.confirmPassword}
+                onChange={onChange}
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                aria-pressed={showConfirmPassword}
+              >
+                <i className={`bi ${showConfirmPassword ? "bi-eye-slash" : "bi-eye"}`} aria-hidden="true"></i>
+              </button>
+            </div>
 
             {passwordMismatch && <p className="form-error">Password and Confirm Password must match.</p>}
             {submitError && <p className="form-error">{submitError}</p>}

@@ -3,7 +3,7 @@ import "./sign.css";
 
 const STRONG_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$/;
 
-function ForgotPassword({ onBackToSignin }) {
+function ForgotPassword({ onBackToSignin, onClose, variant }) {
   const [method, setMethod] = useState("mobile");
   const [otpRequested, setOtpRequested] = useState({
     mobile: false,
@@ -29,6 +29,7 @@ function ForgotPassword({ onBackToSignin }) {
 
   const isMobile = method === "mobile";
   const otpEnabled = isMobile ? otpRequested.mobile : otpRequested.email;
+  const isModal = variant === "modal";
 
   function onChange(event) {
     const { name, value } = event.target;
@@ -96,16 +97,26 @@ function ForgotPassword({ onBackToSignin }) {
   }
 
   return (
-    <div className="signin-page">
+    <div
+      className={`signin-page${isModal ? " signin-modal" : ""}`}
+      onClick={isModal ? onClose : undefined}
+    >
       <div className="signin-glow signin-glow-a" />
       <div className="signin-glow signin-glow-b" />
-      <div className="signin-shell">
-        <div className="brand-block">
-          <p className="brand-title">AMIITJEE</p>
-          <p className="brand-subtitle">Career institute</p>
-        </div>
+      <div className="signin-shell" onClick={(event) => event.stopPropagation()}>
+        {!isModal && (
+          <div className="brand-block">
+            <p className="brand-title">AMIITJEE</p>
+            <p className="brand-subtitle">Career institute</p>
+          </div>
+        )}
 
         <main className="signin-card">
+          {isModal && (
+            <button type="button" className="signin-close" onClick={onClose}>
+              X
+            </button>
+          )}
           <div className="signin-tabs" role="tablist" aria-label="Reset method">
             <button
               type="button"

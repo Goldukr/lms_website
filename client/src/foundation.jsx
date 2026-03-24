@@ -192,6 +192,130 @@ function Foundation({ onBackHome, onBackCourses, onSelectSubject, auth, userName
             );
           })}
         </div>
+
+        <div style={{
+          background: "linear-gradient(145deg, #0b5a43, #084a37)",
+          border: "1px solid rgba(86, 201, 156, 0.22)",
+          borderRadius: "16px",
+          padding: "36px 40px",
+          margin: "40px 0 20px",
+          width: "100%",
+          boxSizing: "border-box",
+          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.28)",
+        }}>
+          <h3 style={{
+            color: "#6ee7b7",
+            fontSize: "1.45rem",
+            margin: "0 0 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            fontWeight: "800",
+          }}>
+            <span aria-hidden="true" style={{ fontSize: "1.6rem" }}>Foundation</span> Foundation Program
+          </h3>
+          <h4 style={{
+            color: "#ffffff",
+            fontSize: "1.2rem",
+            fontWeight: "700",
+            margin: "0 0 24px",
+            lineHeight: "1.4"
+          }}>
+            Start Early. Build Strong. Stay Ahead.
+          </h4>
+
+          <div style={{
+            color: "#94a3b8",
+            fontSize: "1rem",
+            lineHeight: "1.7",
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px"
+          }}>
+            <p style={{ margin: 0 }}>
+              At AMITJEE Career Institute, we believe that great achievements begin with a strong foundation. Our Foundation Program for Class 7 to 10 is carefully designed to nurture young minds and prepare them for long-term academic success.
+            </p>
+            <p style={{ margin: 0 }}>
+              This stage is not just about learning school subjects - it is about developing the right mindset, learning habits, and problem-solving abilities that will shape a student's future. We focus on building clarity of concepts from the basics, ensuring that students understand why things work, not just how.
+            </p>
+            <p style={{ margin: 0 }}>
+              Our program goes beyond traditional classroom teaching by integrating school curriculum with early competitive exam preparation for JEE, NEET, and Olympiads. This helps students stay ahead of their peers while maintaining excellent performance in school.
+            </p>
+            <p style={{ margin: 0 }}>
+              We create a learning environment where students feel motivated, confident, and curious, helping them develop a genuine interest in Science and Mathematics.
+            </p>
+
+            <div style={{ background: "rgba(5, 41, 31, 0.6)", border: "1px solid rgba(110, 231, 183, 0.12)", borderRadius: "16px", padding: "28px" }}>
+              <p style={{ margin: "0 0 20px", color: "#e2ebff", fontWeight: "600", fontSize: "1.1rem" }}>
+                Why Foundation Matters
+              </p>
+              <p style={{ margin: "0 0 20px", color: "#94a3b8" }}>
+                The journey to success in competitive exams begins much earlier than most students realize. Starting early gives students a significant advantage, allowing them to build strong fundamentals without pressure.
+              </p>
+              <ul style={{ margin: 0, paddingLeft: 0, listStyleType: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>1</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Deep Conceptual Understanding</strong> Move beyond rote learning and truly understand core concepts, making advanced topics easier in the future.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>2</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Strong Analytical and Logical Thinking</strong> Develop the ability to think critically and solve problems step by step, an essential skill for JEE, NEET, and Olympiads.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>3</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Confidence in Problem Solving</strong> Gain the confidence to tackle challenging questions without fear or hesitation.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>4</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Early Exposure to Competitive Exams</strong> Get familiar with exam patterns, question types, and strategies from a young age.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>5</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Better Academic Performance</strong> Excel in school exams while simultaneously preparing for higher-level competitions.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>6</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Disciplined Study Habits</strong> Learn time management, consistency, and smart study techniques that stay useful for years.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div style={{ background: "rgba(5, 41, 31, 0.6)", border: "1px solid rgba(110, 231, 183, 0.12)", borderRadius: "16px", padding: "28px" }}>
+              <p style={{ margin: "0 0 20px", color: "#e2ebff", fontWeight: "600", fontSize: "1.1rem" }}>
+                Our Approach
+              </p>
+              <ul style={{ margin: 0, paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "12px", color: "#94a3b8" }}>
+                <li>Concept-based teaching with real-life examples</li>
+                <li>Regular practice with increasing difficulty levels</li>
+                <li>Periodic tests with detailed performance analysis</li>
+                <li>Doubt-solving sessions for clarity and confidence</li>
+                <li>Continuous motivation and mentorship</li>
+              </ul>
+            </div>
+
+            <div style={{
+              background: "rgba(110, 231, 183, 0.08)",
+              padding: "24px 32px",
+              borderRadius: "14px",
+              marginTop: "16px",
+              borderLeft: "4px solid #6ee7b7",
+              boxShadow: "0 8px 24px rgba(10, 28, 42, 0.22)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px"
+            }}>
+              <h5 style={{ color: "#6ee7b7", fontSize: "1.2rem", margin: 0, display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "0.03em", fontWeight: "800" }}>
+                Build Today for a Better Tomorrow
+              </h5>
+              <p style={{ margin: "0 0 4px", color: "#e2ebff", fontSize: "1.1rem" }}>
+                A strong foundation today creates limitless opportunities tomorrow.
+              </p>
+              <p style={{ margin: "4px 0 0", fontWeight: "800", color: "#ffffff", fontSize: "1.15rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span aria-hidden="true">{">"}</span> Join AMITJEE Foundation Program and give your child a head start towards success.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <footer className="course-footer">

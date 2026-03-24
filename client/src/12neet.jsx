@@ -167,19 +167,21 @@ function Neet12({ onBackHome, onBackCourses, onSelectSubject, onOpenPhysics, aut
             <i className="bi bi-arrow-return-left" aria-hidden="true"></i>
           </button>
         </div>
-        <div className="course-grid">
-          {SUBJECTS.map((subject) => (
-            <button
-              key={subject}
-              type="button"
-              className="course-card with-image"
-              onClick={() => handleSubjectSelect(subject)}
-            >
-              <img className="course-card-image" src={SUBJECT_IMAGES[subject]} alt="" aria-hidden="true" />
-              <span className="course-card-text">{subject}</span>
-            </button>
-          ))}
-        </div>
+        {auth && (
+          <div className="course-grid">
+            {SUBJECTS.map((subject) => (
+              <button
+                key={subject}
+                type="button"
+                className="course-card with-image"
+                onClick={() => handleSubjectSelect(subject)}
+              >
+                <img className="course-card-image" src={SUBJECT_IMAGES[subject]} alt="" aria-hidden="true" />
+                <span className="course-card-text">{subject}</span>
+              </button>
+            ))}
+          </div>
+        )}
         
         <div style={{
           background: "linear-gradient(145deg, #064e3b, #022c22)",

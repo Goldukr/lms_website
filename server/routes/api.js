@@ -486,6 +486,27 @@ router.patch("/admin/students/:id/approve", requireAdmin, async (req, res) => {
   }
 });
 
+router.patch("/admin/students/approve-all", requireAdmin, async (_req, res) => {
+  try {
+    await ensureStudentsTable();
+    const result = await pool.query(
+      `
+        UPDATE students
+        SET status = 'approved'
+        WHERE status IS DISTINCT FROM 'approved'
+        RETURNING id, name, mobile, email, course, status, created_at
+      `
+    );
+
+    res.json({
+      approvedCount: result.rowCount,
+      students: result.rows,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.delete("/admin/students/:id", requireAdmin, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) {

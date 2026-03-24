@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./course.css";
 
-const SUBJECTS = ["Physics", "Chemistry", "Mathematics", "Biology", "Social Science", "English"];
+const SUBJECTS = ["Physics", "Chemistry", "Mathematics", "Biology"];
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
 
 // Assumed paths based on project pattern
@@ -10,8 +10,6 @@ const SUBJECT_IMAGES = {
   Chemistry: "/assets/chemistry.png",
   Mathematics: "/assets/mathematics.png",
   Biology: "/assets/biology.png",
-  "Social Science": "/assets/social-science.png",
-  English: "/assets/english.png",
 };
 
 const FOOTER_GROUPS = [
@@ -175,18 +173,141 @@ function Class7({ onBackHome, onBackCourses, onSelectSubject, auth, userName, on
           </button>
         </div>
 
-        <div className="course-grid">
-          {SUBJECTS.map((subject) => (
-            <button
-              key={subject}
-              type="button"
-              className="course-card with-image"
-              onClick={() => handleSubjectSelect(subject)}
-            >
-              <img className="course-card-image" src={SUBJECT_IMAGES[subject]} alt="" aria-hidden="true" />
-              <span className="course-card-text">{subject}</span>
-            </button>
-          ))}
+        {auth && (
+          <div className="course-grid">
+            {SUBJECTS.map((subject) => (
+              <button
+                key={subject}
+                type="button"
+                className="course-card with-image"
+                onClick={() => handleSubjectSelect(subject)}
+              >
+                <img className="course-card-image" src={SUBJECT_IMAGES[subject]} alt="" aria-hidden="true" />
+                <span className="course-card-text">{subject}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div style={{
+          background: "linear-gradient(145deg, #0b5a43, #084a37)",
+          border: "1px solid rgba(86, 201, 156, 0.22)",
+          borderRadius: "16px",
+          padding: "36px 40px",
+          margin: "40px 0 20px",
+          width: "100%",
+          boxSizing: "border-box",
+          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.28)",
+        }}>
+          <h3 style={{
+            color: "#6ee7b7",
+            fontSize: "1.45rem",
+            margin: "0 0 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            fontWeight: "800",
+          }}>
+            <span aria-hidden="true" style={{ fontSize: "1.6rem" }}>Class 7</span> Build Curiosity and Strong Basics
+          </h3>
+          <h4 style={{
+            color: "#ffffff",
+            fontSize: "1.2rem",
+            fontWeight: "700",
+            margin: "0 0 24px",
+            lineHeight: "1.4"
+          }}>
+            Class 7 is the perfect stage to ignite curiosity and develop a strong academic foundation.
+          </h4>
+
+          <div style={{
+            color: "#94a3b8",
+            fontSize: "1rem",
+            lineHeight: "1.7",
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px"
+          }}>
+            <p style={{ margin: 0 }}>
+              At this level, students begin to explore core concepts in Science and Mathematics more deeply, and it is important to guide them in the right direction from the very beginning.
+            </p>
+            <p style={{ margin: 0 }}>
+              At AMITJEE Career Institute, we focus on making learning simple, interactive, and engaging so that students develop a genuine interest in studies. Instead of memorizing formulas or definitions, we help students understand concepts through real-life examples, visual explanations, and logical reasoning.
+            </p>
+            <p style={{ margin: 0 }}>
+              Our goal is to build a strong base in fundamental concepts while also introducing students to analytical thinking and structured problem-solving, which are essential for future competitive exams like JEE and NEET.
+            </p>
+            <p style={{ margin: 0 }}>
+              We ensure that students feel confident, motivated, and excited about learning, creating a strong platform for their academic journey ahead.
+            </p>
+
+            <div style={{ background: "rgba(5, 41, 31, 0.6)", border: "1px solid rgba(110, 231, 183, 0.12)", borderRadius: "16px", padding: "28px" }}>
+              <p style={{ margin: "0 0 20px", color: "#e2ebff", fontWeight: "600", fontSize: "1.1rem" }}>
+                What Your Child Will Achieve
+              </p>
+              <ul style={{ margin: 0, paddingLeft: 0, listStyleType: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>1</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Strong Basics in Science and Mathematics</strong> Develop a clear understanding of fundamental concepts that will support higher classes.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>2</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Concept Clarity Through Interactive Learning</strong> Learn through examples, activities, and simplified explanations for better understanding.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>3</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Improved Logical and Analytical Thinking</strong> Start thinking beyond textbooks and develop problem-solving skills early.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>4</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Early Exposure to Structured Problem Solving</strong> Get introduced to step-by-step approaches for solving questions effectively.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>5</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Better School Performance</strong> Strengthen concepts to score better in school exams with confidence.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>6</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Interest and Confidence in Studies</strong> Develop a positive attitude towards learning and reduce fear of difficult subjects.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div style={{ background: "rgba(5, 41, 31, 0.6)", border: "1px solid rgba(110, 231, 183, 0.12)", borderRadius: "16px", padding: "28px" }}>
+              <p style={{ margin: "0 0 20px", color: "#e2ebff", fontWeight: "600", fontSize: "1.1rem" }}>
+                Our Teaching Approach for Class 7
+              </p>
+              <ul style={{ margin: 0, paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "12px", color: "#94a3b8" }}>
+                <li>Simple and easy-to-understand explanations</li>
+                <li>Activity-based and engaging learning methods</li>
+                <li>Regular practice worksheets and assignments</li>
+                <li>Chapter-wise tests with performance feedback</li>
+                <li>Personal attention and doubt-solving support</li>
+              </ul>
+            </div>
+
+            <div style={{
+              background: "rgba(110, 231, 183, 0.08)",
+              padding: "24px 32px",
+              borderRadius: "14px",
+              marginTop: "16px",
+              borderLeft: "4px solid #6ee7b7",
+              boxShadow: "0 8px 24px rgba(10, 28, 42, 0.22)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px"
+            }}>
+              <h5 style={{ color: "#6ee7b7", fontSize: "1.2rem", margin: 0, display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "0.03em", fontWeight: "800" }}>
+                Learn Smart from the Start
+              </h5>
+              <p style={{ margin: "0 0 4px", color: "#e2ebff", fontSize: "1.1rem" }}>
+                A strong beginning makes everything easier in the future.
+              </p>
+              <p style={{ margin: "4px 0 0", fontWeight: "800", color: "#ffffff", fontSize: "1.15rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span aria-hidden="true">{">"}</span> Enroll in Class 7 Foundation Program and build a powerful base for success.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

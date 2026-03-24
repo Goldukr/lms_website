@@ -32,3 +32,5 @@ const pool = new Pool({
 pool.connect()
   .then(() => console.log("✅ Database Connected"))
   .catch(err => console.error("❌ Database Error:", err));
+
+module.exports = pool;

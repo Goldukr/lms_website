@@ -4,6 +4,7 @@ import "./course.css";
 const NAV_ITEMS = ["Home", "Admin", "Test Series", "About Us"];
 const COURSE_OPTIONS = ["11 NEET", "11 JEE-Advance", "12 NEET", "12 JEE-Advance", "NEET Dropper", "JEE Dropper", "Class 7", "Class 8", "Class 9", "Class 10"];
 const SUBJECT_OPTIONS = ["Physics", "Chemistry", "Mathematics", "Biology", "English", "Social Science"];
+const FOUNDATION_SUBJECT_OPTIONS = ["Physics", "Chemistry", "Mathematics", "Biology"];
 
 const FOOTER_GROUPS = [
   {
@@ -73,6 +74,9 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
     }
     if (form.course.includes("JEE")) {
       return ["Physics", "Chemistry", "Mathematics"];
+    }
+    if (["Class 7", "Class 8", "Class 9", "Class 10"].includes(form.course)) {
+      return FOUNDATION_SUBJECT_OPTIONS;
     }
     return SUBJECT_OPTIONS;
   }, [form.course]);

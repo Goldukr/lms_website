@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./course.css";
 
-const SUBJECTS = ["Physics", "Chemistry", "Mathematics", "Biology", "Social Science", "English"];
+const SUBJECTS = ["Physics", "Chemistry", "Mathematics", "Biology"];
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
 
 const SUBJECT_IMAGES = {
@@ -9,8 +9,6 @@ const SUBJECT_IMAGES = {
   Chemistry: "/assets/chemistry.png",
   Mathematics: "/assets/mathematics.png",
   Biology: "/assets/biology.png",
-  "Social Science": "/assets/social-science.png",
-  English: "/assets/english.png",
 };
 
 const FOOTER_GROUPS = [
@@ -174,18 +172,134 @@ function Class8({ onBackHome, onBackCourses, onSelectSubject, auth, userName, on
           </button>
         </div>
 
-        <div className="course-grid">
-          {SUBJECTS.map((subject) => (
-            <button
-              key={subject}
-              type="button"
-              className="course-card with-image"
-              onClick={() => handleSubjectSelect(subject)}
-            >
-              <img className="course-card-image" src={SUBJECT_IMAGES[subject]} alt="" aria-hidden="true" />
-              <span className="course-card-text">{subject}</span>
-            </button>
-          ))}
+        {auth && (
+          <div className="course-grid">
+            {SUBJECTS.map((subject) => (
+              <button
+                key={subject}
+                type="button"
+                className="course-card with-image"
+                onClick={() => handleSubjectSelect(subject)}
+              >
+                <img className="course-card-image" src={SUBJECT_IMAGES[subject]} alt="" aria-hidden="true" />
+                <span className="course-card-text">{subject}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div style={{
+          background: "linear-gradient(145deg, #0b5a43, #084a37)",
+          border: "1px solid rgba(86, 201, 156, 0.22)",
+          borderRadius: "16px",
+          padding: "36px 40px",
+          margin: "40px 0 20px",
+          width: "100%",
+          boxSizing: "border-box",
+          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.28)",
+        }}>
+          <h3 style={{
+            color: "#6ee7b7",
+            fontSize: "1.45rem",
+            margin: "0 0 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            fontWeight: "800",
+          }}>
+            <span aria-hidden="true" style={{ fontSize: "1.6rem" }}>Class 8</span> Strengthen Concepts and Build Confidence
+          </h3>
+          <h4 style={{
+            color: "#ffffff",
+            fontSize: "1.2rem",
+            fontWeight: "700",
+            margin: "0 0 24px",
+            lineHeight: "1.4"
+          }}>
+            Class 8 is a crucial stage where students move from basic understanding to deeper conceptual learning and application.
+          </h4>
+
+          <div style={{
+            color: "#94a3b8",
+            fontSize: "1rem",
+            lineHeight: "1.7",
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px"
+          }}>
+            <p style={{ margin: 0 }}>
+              At this level, subjects become slightly more advanced, and students need the right guidance to strengthen their fundamentals.
+            </p>
+            <p style={{ margin: 0 }}>
+              At AMITJEE Career Institute, we focus on helping students connect concepts with real-world applications, making learning more meaningful and long-lasting. Our teaching approach ensures that students not only understand topics but also gain the confidence to apply them in different types of questions.
+            </p>
+            <p style={{ margin: 0 }}>
+              We gradually introduce students to structured problem-solving and competitive-level thinking, preparing them for future academic challenges while keeping learning engaging and stress-free.
+            </p>
+
+            <div style={{ background: "rgba(5, 41, 31, 0.6)", border: "1px solid rgba(110, 231, 183, 0.12)", borderRadius: "16px", padding: "28px" }}>
+              <p style={{ margin: "0 0 20px", color: "#e2ebff", fontWeight: "600", fontSize: "1.1rem" }}>
+                What Your Child Will Achieve
+              </p>
+              <ul style={{ margin: 0, paddingLeft: 0, listStyleType: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>1</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Stronger Conceptual Understanding</strong> Build deeper clarity in Science and Mathematics for advanced learning.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>2</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Improved Problem-Solving Skills</strong> Learn step-by-step approaches to solve different types of questions.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>3</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Introduction to Competitive Thinking</strong> Get early exposure to Olympiad and higher-level questions.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>4</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Regular Practice and Assessment</strong> Improve accuracy and confidence through continuous practice.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>5</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Better Academic Performance</strong> Perform consistently well in school exams with strong concepts.</span>
+                </li>
+                <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.03)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span aria-hidden="true" style={{ fontSize: "1.4rem", color: "#6ee7b7" }}>6</span>
+                  <span><strong style={{ color: "#fff", display: "block", marginBottom: "4px", fontSize: "1.05rem" }}>Increased Confidence in Studies</strong> Overcome fear of complex topics and develop a positive learning attitude.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div style={{ background: "rgba(5, 41, 31, 0.6)", border: "1px solid rgba(110, 231, 183, 0.12)", borderRadius: "16px", padding: "28px" }}>
+              <p style={{ margin: "0 0 20px", color: "#e2ebff", fontWeight: "600", fontSize: "1.1rem" }}>
+                Our Teaching Approach
+              </p>
+              <ul style={{ margin: 0, paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "12px", color: "#94a3b8" }}>
+                <li>Concept-based and interactive teaching</li>
+                <li>Practice worksheets with increasing difficulty</li>
+                <li>Chapter-wise tests with detailed feedback</li>
+                <li>Doubt-solving sessions and personal guidance</li>
+              </ul>
+            </div>
+
+            <div style={{
+              background: "rgba(110, 231, 183, 0.08)",
+              padding: "24px 32px",
+              borderRadius: "14px",
+              marginTop: "16px",
+              borderLeft: "4px solid #6ee7b7",
+              boxShadow: "0 8px 24px rgba(10, 28, 42, 0.22)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px"
+            }}>
+              <h5 style={{ color: "#6ee7b7", fontSize: "1.2rem", margin: 0, display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "0.03em", fontWeight: "800" }}>
+                Build Confidence. Move Ahead.
+              </h5>
+              <p style={{ margin: "4px 0 0", fontWeight: "800", color: "#ffffff", fontSize: "1.15rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span aria-hidden="true">{">"}</span> Join Class 8 Foundation Program and strengthen your learning journey.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

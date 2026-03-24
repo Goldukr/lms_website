@@ -5,6 +5,7 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant 
   const [role, setRole] = useState("student");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     identifier: "",
     password: "",
@@ -13,6 +14,16 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant 
   function onChange(event) {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function onRoleChange(nextRole) {
+    setRole(nextRole);
+    setForm({
+      identifier: "",
+      password: "",
+    });
+    setSubmitError("");
+    setShowPassword(false);
   }
 
   async function onSubmit(event) {
@@ -73,7 +84,7 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant 
               role="tab"
               aria-selected={isStudent}
               className={`signin-tab ${isStudent ? "active" : ""}`}
-              onClick={() => setRole("student")}
+              onClick={() => onRoleChange("student")}
             >
               Student Panel
             </button>
@@ -82,7 +93,7 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant 
               role="tab"
               aria-selected={!isStudent}
               className={`signin-tab ${!isStudent ? "active" : ""}`}
-              onClick={() => setRole("admin")}
+              onClick={() => onRoleChange("admin")}
             >
               Admin Panel
             </button>
@@ -104,15 +115,26 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant 
             />
 
             <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={onChange}
-              required
-            />
+            <div className="password-field">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={form.password}
+                onChange={onChange}
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
+                <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} aria-hidden="true"></i>
+              </button>
+            </div>
 
             <button type="button" className="forgot-link" onClick={onForgotPassword}>
               Forgot Password?

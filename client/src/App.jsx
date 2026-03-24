@@ -31,6 +31,7 @@ function App() {
   const [page, setPage] = useState("home");
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [homeCourseTarget, setHomeCourseTarget] = useState("");
   const [courseBackTarget, setCourseBackTarget] = useState("course");
   const [auth, setAuth] = useState(() => {
@@ -48,6 +49,12 @@ function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [page]);
+
+  useEffect(() => {
+    if (page === "signin" || page === "signup" || page === "forgot") {
+      setPage("home");
+    }
   }, [page]);
 
   function getCoursePage(course) {
@@ -176,7 +183,7 @@ function App() {
         }}
         onForgotPassword={() => {
           setShowLoginModal(false);
-          setPage("forgot");
+          setShowForgotPasswordModal(true);
         }}
         onSignIn={(data) => {
           setAuth(data);
@@ -190,16 +197,53 @@ function App() {
       />
     );
   }
+
+  function renderForgotPasswordModal() {
+    if (!showForgotPasswordModal) return null;
+    return (
+      <ForgotPassword
+        variant="modal"
+        onClose={() => setShowForgotPasswordModal(false)}
+        onBackToSignin={() => {
+          setShowForgotPasswordModal(false);
+          setShowLoginModal(true);
+        }}
+      />
+    );
+  }
   function getStudentAllowedPages(course) {
     const base = getCoursePage(course);
     if (base === "neet11") return new Set(["neet11", "neet11-physics", "neet11-chemistry", "neet11-biology"]);
     if (base === "neet12") return new Set(["neet12", "neet12-physics", "neet12-chemistry", "neet12-biology"]);
-    if (base === "neetdropper") return new Set(["neetdropper", "neetdropper-physics", "neetdropper-chemistry", "neetdropper-biology"]);
-    if (base === "jeedropper") return new Set(["jeedropper"]);
+    if (base === "neetdropper") return new Set([
+      "neetdropper",
+      "neetdropper-physics",
+      "neetdropper-chemistry",
+      "neetdropper-biology",
+      "neet11",
+      "neet11-physics",
+      "neet11-chemistry",
+      "neet11-biology",
+      "neet12",
+      "neet12-physics",
+      "neet12-chemistry",
+      "neet12-biology",
+    ]);
+    if (base === "jeedropper") return new Set([
+      "jeedropper",
+      "jee11",
+      "jee11-physics",
+      "jee11-chemistry",
+      "jee11-mathematics",
+      "jee12",
+      "jee12-physics",
+      "jee12-chemistry",
+      "jee12-mathematics",
+    ]);
     if (base === "foundation-class-7") return new Set(["foundation-class-7", "foundation-class-7-physics", "foundation-class-7-chemistry", "foundation-class-7-mathematics", "foundation-class-7-biology", "foundation-class-7-social-science", "foundation-class-7-english"]);
     if (base === "foundation-class-8") return new Set(["foundation-class-8", "foundation-class-8-physics", "foundation-class-8-chemistry", "foundation-class-8-mathematics", "foundation-class-8-biology", "foundation-class-8-social-science", "foundation-class-8-english"]);
     if (base === "foundation-class-9") return new Set(["foundation-class-9", "foundation-class-9-physics", "foundation-class-9-chemistry", "foundation-class-9-mathematics", "foundation-class-9-biology", "foundation-class-9-social-science", "foundation-class-9-english"]);
-    if (base === "foundation-class-10") return new Set(["foundation-class-10", "foundation-class-10-physics", "foundation-class-10-chemistry", "foundation-class-10-mathematics", "foundation-class-10-biology", "foundation-class-10-social-science", "foundation-class-10-english"]);
+    if (base === "foundation-class-10") return new Set(["foundation-class-10", "foundation-class-10-physics", "foundation-class-10-chemistry", "foundation-class-10-mathematics", "foundation-class-10-biology"]);
     if (base === "foundation") return new Set(["foundation", "foundation-class-7", "foundation-class-8", "foundation-class-9", "foundation-class-10"]);
     if (base === "jee11") return new Set(["jee11", "jee11-physics", "jee11-chemistry", "jee11-mathematics"]);
     if (base === "jee12") return new Set(["jee12", "jee12-physics", "jee12-chemistry", "jee12-mathematics"]);
@@ -225,17 +269,10 @@ function App() {
     }
   }, [auth, page]);
 
-  if (page === "signup") {
-    return <Sgnup onBackToSignin={() => setPage("signin")} />;
-  }
-
-  if (page === "forgot") {
-    return <ForgotPassword onBackToSignin={() => setPage("signin")} />;
-  }
-
   if (page === "course") {
     return (
-      <Course
+      <>
+        <Course
         onBackHome={() => {
           setHomeCourseTarget("");
           setPage("home");
@@ -264,7 +301,19 @@ function App() {
            setPage("foundation");
         }}
         selectedCourse={auth?.role === "student" ? auth?.course : homeCourseTarget}
+        auth={auth}
+        userName={auth?.name}
+        userAvatar={auth?.avatar}
+        onLogout={() => {
+          setAuth(null);
+          setPage("home");
+        }}
+        onGoProfile={() => setPage("profile")}
+        onLoginClick={() => setShowLoginModal(true)}
       />
+      {renderLoginModal()}
+      {renderForgotPasswordModal()}
+    </>
     );
   }
 
@@ -326,6 +375,7 @@ function App() {
           onLoginClick={() => setShowLoginModal(true)}
         />
         {renderLoginModal()}
+        {renderForgotPasswordModal()}
       </>
     );
   }
@@ -358,6 +408,7 @@ function App() {
           onLoginClick={() => setShowLoginModal(true)}
         />
         {renderLoginModal()}
+        {renderForgotPasswordModal()}
       </>
     );
   }
@@ -396,6 +447,7 @@ function App() {
           onLoginClick={() => setShowLoginModal(true)}
         />
         {renderLoginModal()}
+        {renderForgotPasswordModal()}
       </>
     );
   }
@@ -441,6 +493,7 @@ function App() {
           onLoginClick={() => setShowLoginModal(true)}
         />
         {renderLoginModal()}
+        {renderForgotPasswordModal()}
       </>
     );
   }
@@ -473,6 +526,7 @@ function App() {
           onLoginClick={() => setShowLoginModal(true)}
         />
         {renderLoginModal()}
+        {renderForgotPasswordModal()}
       </>
     );
   }
@@ -505,6 +559,7 @@ function App() {
           onLoginClick={() => setShowLoginModal(true)}
         />
         {renderLoginModal()}
+        {renderForgotPasswordModal()}
       </>
     );
   }
@@ -607,6 +662,7 @@ function App() {
           onSelectSubject={(subj) => setPage(`foundation-${subj}`)}
         />
         {renderLoginModal()}
+        {renderForgotPasswordModal()}
       </>
     );
   }
@@ -618,6 +674,15 @@ function App() {
         onBackCourses={() => setPage("course")}
         courseLabel="11 NEET"
         courseQuery="11 NEET"
+        auth={auth}
+        userName={auth?.name}
+        userAvatar={auth?.avatar}
+        onLogout={() => {
+          setAuth(null);
+          setPage("home");
+        }}
+        onGoProfile={() => setPage("profile")}
+        onLoginClick={() => setShowLoginModal(true)}
       />
     );
   }
@@ -629,24 +694,33 @@ function App() {
         onBackCourses={() => setPage("course")}
         courseLabel="12 NEET"
         courseQuery="12 NEET"
+        auth={auth}
+        userName={auth?.name}
+        userAvatar={auth?.avatar}
+        onLogout={() => {
+          setAuth(null);
+          setPage("home");
+        }}
+        onGoProfile={() => setPage("profile")}
+        onLoginClick={() => setShowLoginModal(true)}
       />
     );
   }
 
   if (page === "neet11-chemistry") {
-    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 NEET" courseQuery="11 NEET" />;
+    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 NEET" courseQuery="11 NEET" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "neet12-chemistry") {
-    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 NEET" courseQuery="12 NEET" />;
+    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 NEET" courseQuery="12 NEET" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "neet11-biology") {
-    return <Biology onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 NEET" courseQuery="11 NEET" />;
+    return <Biology onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 NEET" courseQuery="11 NEET" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "neet12-biology") {
-    return <Biology onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 NEET" courseQuery="12 NEET" />;
+    return <Biology onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 NEET" courseQuery="12 NEET" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "neetdropper-physics") {
@@ -656,40 +730,49 @@ function App() {
         onBackCourses={() => setPage("course")}
         courseLabel="NEET Dropper"
         courseQuery="NEET Dropper"
+        auth={auth}
+        userName={auth?.name}
+        userAvatar={auth?.avatar}
+        onLogout={() => {
+          setAuth(null);
+          setPage("home");
+        }}
+        onGoProfile={() => setPage("profile")}
+        onLoginClick={() => setShowLoginModal(true)}
       />
     );
   }
 
   if (page === "neetdropper-chemistry") {
-    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="NEET Dropper" courseQuery="NEET Dropper" />;
+    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="NEET Dropper" courseQuery="NEET Dropper" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "neetdropper-biology") {
-    return <Biology onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="NEET Dropper" courseQuery="NEET Dropper" />;
+    return <Biology onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="NEET Dropper" courseQuery="NEET Dropper" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "jee11-physics") {
-    return <Physics onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 JEE-Advance" courseQuery="11 JEE-Advance" />;
+    return <Physics onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 JEE-Advance" courseQuery="11 JEE-Advance" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "jee12-physics") {
-    return <Physics onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 JEE-Advance" courseQuery="12 JEE-Advance" />;
+    return <Physics onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 JEE-Advance" courseQuery="12 JEE-Advance" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "jee11-chemistry") {
-    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 JEE-Advance" courseQuery="11 JEE-Advance" />;
+    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 JEE-Advance" courseQuery="11 JEE-Advance" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "jee12-chemistry") {
-    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 JEE-Advance" courseQuery="12 JEE-Advance" />;
+    return <Chemistry onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 JEE-Advance" courseQuery="12 JEE-Advance" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "jee11-mathematics") {
-    return <Mathematics onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 JEE-Advance" courseQuery="11 JEE-Advance" />;
+    return <Mathematics onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="11 JEE-Advance" courseQuery="11 JEE-Advance" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   if (page === "jee12-mathematics") {
-    return <Mathematics onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 JEE-Advance" courseQuery="12 JEE-Advance" />;
+    return <Mathematics onBackHome={() => setPage("home")} onBackCourses={() => setPage("course")} courseLabel="12 JEE-Advance" courseQuery="12 JEE-Advance" auth={auth} userName={auth?.name} userAvatar={auth?.avatar} onLogout={() => { setAuth(null); setPage("home"); }} onGoProfile={() => setPage("profile")} onLoginClick={() => setShowLoginModal(true)} />;
   }
 
   
@@ -782,7 +865,7 @@ function App() {
                 }}
                 onForgotPassword={() => {
                   setShowLoginModal(false);
-                  setPage("forgot");
+                  setShowForgotPasswordModal(true);
                 }}
                 onSignIn={(data) => {
                   setAuth(data);
@@ -795,6 +878,7 @@ function App() {
                 }}
               />
             )}
+            {renderForgotPasswordModal()}
           </>
         )}
         {showSignupModal && (
@@ -811,25 +895,8 @@ function App() {
     );
   }
 
-  return (
-    <Signin
-      onCreateAccount={() => setPage("signup")}
-      onForgotPassword={() => setPage("forgot")}
-      onSignIn={(data) => {
-        setAuth(data);
-        if (data?.role === "student") {
-          setPage(getCoursePage(data?.course));
-        } else {
-          setPage("home");
-        }
-      }}
-    />
-  );
+  return null;
 }
 
 export default App;
-
-
-
-
 

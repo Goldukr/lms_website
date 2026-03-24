@@ -692,6 +692,23 @@
   -webkit-text-fill-color: transparent;
 }
 
+.home-quote-mark {
+  display: inline-block;
+  font-size: 1.25em;
+  font-weight: 800;
+  line-height: 0;
+  vertical-align: -0.12em;
+  -webkit-text-fill-color: #ffe15d;
+}
+
+.home-quote-mark-open {
+  margin-right: 0.08em;
+}
+
+.home-quote-mark-close {
+  margin-left: 0.08em;
+}
+
 .home-quote-author {
   font-size: 1.15rem;
   color: #ffe15d;
