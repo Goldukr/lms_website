@@ -8,6 +8,16 @@ function AdminPanel({ token, onLogout, onBackHome }) {
   const [roleFilter, setRoleFilter] = useState("all");
   const [actionError, setActionError] = useState("");
 
+  function getCurrentAdminId() {
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return Number(payload?.id) || null;
+    } catch (_error) {
+      return null;
+    }
+  }
+
   async function loadStudents() {
     if (!token) {
       setError("Missing admin token. Please sign in again.");
@@ -88,6 +98,10 @@ function AdminPanel({ token, onLogout, onBackHome }) {
   }
 
   async function deleteStudent(id) {
+    const confirmed = window.confirm("Are you sure you want to delete this user?");
+    if (!confirmed) {
+      return;
+    }
     setActionError("");
     try {
       const response = await fetch(`/api/admin/students/${id}`, {
@@ -108,6 +122,10 @@ function AdminPanel({ token, onLogout, onBackHome }) {
   }
 
   async function deleteAdmin(id) {
+    const confirmed = window.confirm("Are you sure you want to delete this admin?");
+    if (!confirmed) {
+      return;
+    }
     setActionError("");
     try {
       const response = await fetch(`/api/admin/admins/${id}`, {
@@ -121,9 +139,37 @@ function AdminPanel({ token, onLogout, onBackHome }) {
         setActionError(data?.error || "Failed to delete admin.");
         return;
       }
+      if (id === getCurrentAdminId()) {
+        onLogout();
+        return;
+      }
       setStudents((prev) => prev.filter((item) => !(item.role === "admin" && item.id === id)));
     } catch (_error) {
       setActionError("Failed to delete admin.");
+    }
+  }
+
+  async function deleteAllUsers() {
+    const confirmed = window.confirm("Are you sure you want to delete all users?");
+    if (!confirmed) {
+      return;
+    }
+    setActionError("");
+    try {
+      const response = await fetch("/api/admin/users", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response.status === 204 ? null : await response.json();
+      if (!response.ok) {
+        setActionError(data?.error || "Failed to delete all users.");
+        return;
+      }
+      onLogout();
+    } catch (_error) {
+      setActionError("Failed to delete all users.");
     }
   }
 
@@ -185,7 +231,18 @@ function AdminPanel({ token, onLogout, onBackHome }) {
 
         <main className="admin-card">
           <div className="admin-card-head">
-            <div className="admin-card-spacer" />
+            <div className="admin-card-head-actions">
+              {students.length > 0 && (
+                <button
+                  type="button"
+                  className="admin-mini-btn admin-delete-all-btn"
+                  onClick={deleteAllUsers}
+                  disabled={loading}
+                >
+                  Delete All Users
+                </button>
+              )}
+            </div>
             {pendingStudentsCount > 0 && (
               <button
                 type="button"

@@ -100,8 +100,19 @@
   min-height: 1px;
 }
 
+.admin-card-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .admin-approve-all-btn {
   margin-left: auto;
+}
+
+.admin-delete-all-btn {
+  background: rgba(233, 88, 88, 0.9);
+  color: #1a0c0c;
 }
 
 .admin-course-table .admin-card-head {
