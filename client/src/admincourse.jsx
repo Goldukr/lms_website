@@ -146,6 +146,25 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
       .catch(() => setStatus("Delete failed."));
   }
 
+  function onDeleteAll() {
+    if (!token) {
+      setStatus("Missing admin token.");
+      return;
+    }
+    fetch(`${API_BASE}/api/admin/notes`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) return response.json().then((data) => Promise.reject(data));
+        setStatus("");
+        loadUploads();
+      })
+      .catch(() => setStatus("Delete all failed."));
+  }
+
   return (
     <div className="course-page">
       <header className="course-topbar">
@@ -236,7 +255,18 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
         </div>
 
         <div className="admin-course-table">
-          <h2 className="admin-course-table-title">Uploaded Files</h2>
+          <div className="admin-card-head">
+            <h2 className="admin-course-table-title">Uploaded Files</h2>
+            {uploads.length > 0 && (
+              <button
+                type="button"
+                className="primary-btn admin-approve-all-btn"
+                onClick={onDeleteAll}
+              >
+                Delete All
+              </button>
+            )}
+          </div>
           <div className="admin-course-table-grid">
             <div className="admin-course-table-row admin-course-table-header">
               <span>Chapter</span>

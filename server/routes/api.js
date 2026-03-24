@@ -448,10 +448,40 @@ router.delete("/admin/notes/:id", requireAdmin, async (req, res) => {
 
   try {
     await ensureNotesTable();
+    const existing = await pool.query("SELECT file_path FROM notes WHERE id = $1", [id]);
+    if (!existing.rowCount) {
+      return res.status(404).json({ error: "note not found" });
+    }
+
     const result = await pool.query("DELETE FROM notes WHERE id = $1", [id]);
     if (!result.rowCount) {
       return res.status(404).json({ error: "note not found" });
     }
+
+    const filePath = path.join(uploadsDir, existing.rows[0].file_path);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete("/admin/notes", requireAdmin, async (_req, res) => {
+  try {
+    await ensureNotesTable();
+    const existing = await pool.query("SELECT file_path FROM notes");
+    await pool.query("DELETE FROM notes");
+
+    for (const row of existing.rows) {
+      const filePath = path.join(uploadsDir, row.file_path);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: error.message });

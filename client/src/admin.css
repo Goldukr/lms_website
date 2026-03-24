@@ -104,6 +104,14 @@
   margin-left: auto;
 }
 
+.admin-course-table .admin-card-head {
+  margin-bottom: 18px;
+}
+
+.admin-course-table .admin-course-table-title {
+  margin: 0;
+}
+
 .admin-actions-cell {
   display: flex;
   gap: 8px;
