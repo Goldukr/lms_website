@@ -822,6 +822,7 @@ function App() {
           auth?.role === "admin" ? (
             <HomeLogin
               userName={auth?.name}
+              token={auth?.token}
               isAdmin
               onExploreCourses={() => setPage("admincourse")}
               onBrandClick={() => setPage("home")}

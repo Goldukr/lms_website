@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./home.css";
 import screenSaverImageOne from "../web design.png";
 import screenSaverImageTwo from "../web2.png";
+import { apiUrl, parseJsonResponse } from "./api";
 
 
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
@@ -74,7 +75,7 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
     setQueryForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function onQuerySubmit(event) {
+  async function onQuerySubmit(event) {
     event.preventDefault();
     if (queryForm.mobile.length !== 10) {
       setQueryStatus("Mobile number must be exactly 10 digits.");
@@ -82,16 +83,26 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
       return;
     }
 
-    const entry = {
-      id: `${Date.now()}`,
-      ...queryForm,
-      created_at: new Date().toISOString(),
-    };
-    const existing = JSON.parse(localStorage.getItem("queries") || "[]");
-    localStorage.setItem("queries", JSON.stringify([entry, ...existing]));
-    setQueryForm({ name: "", email: "", mobile: "", query: "" });
-    setQueryStatus("Query submitted.");
-    setTimeout(() => setQueryStatus(""), 2000);
+    try {
+      const response = await fetch(apiUrl("/api/queries"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(queryForm),
+      });
+      const data = await parseJsonResponse(response);
+      if (!response.ok) {
+        setQueryStatus(data?.error || "Failed to submit query.");
+        setTimeout(() => setQueryStatus(""), 2500);
+        return;
+      }
+
+      setQueryForm({ name: "", email: "", mobile: "", query: "" });
+      setQueryStatus("Query submitted.");
+      setTimeout(() => setQueryStatus(""), 2000);
+    } catch (_error) {
+      setQueryStatus("Failed to submit query.");
+      setTimeout(() => setQueryStatus(""), 2500);
+    }
   }
 
   useEffect(() => {

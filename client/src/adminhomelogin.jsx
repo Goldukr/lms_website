@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./home.css";
 import screenSaverImageOne from "../web design.png";
 import screenSaverImageTwo from "../web2.png";
+import { apiUrl, parseJsonResponse } from "./api";
 
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
 
@@ -42,7 +43,7 @@ const FOOTER_GROUPS = [
 
 const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Schools", "Legal & Accessibility"];
 
-function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdmin, isAdmin, onGoCourses }) {
+function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdmin, isAdmin, onGoCourses, token }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const [queries, setQueries] = useState([]);
@@ -67,9 +68,8 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
   }, [menuOpen]);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("queries") || "[]");
-    setQueries(stored);
-  }, []);
+    refreshQueries();
+  }, [token]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -91,9 +91,27 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
   }, [navOpen]);
 
 
-  function refreshQueries() {
-    const stored = JSON.parse(localStorage.getItem("queries") || "[]");
-    setQueries(stored);
+  async function refreshQueries() {
+    if (!token) {
+      setQueries([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(apiUrl("/api/admin/queries"), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await parseJsonResponse(response);
+      if (!response.ok) {
+        setQueries([]);
+        return;
+      }
+      setQueries(Array.isArray(data) ? data : []);
+    } catch (_error) {
+      setQueries([]);
+    }
   }
 
   return (

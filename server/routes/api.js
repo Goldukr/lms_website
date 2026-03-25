@@ -78,6 +78,19 @@ async function ensureNotesTable() {
   `);
 }
 
+async function ensureQueriesTable() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS queries (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      mobile TEXT NOT NULL,
+      query TEXT NOT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )
+  `);
+}
+
 function hashPassword(password, salt = null) {
   const nextSalt = salt || crypto.randomBytes(16).toString("hex");
   const hash = crypto.pbkdf2Sync(password, nextSalt, 120000, 64, "sha512").toString("hex");
@@ -155,6 +168,35 @@ router.get("/health", async (_req, res) => {
     res.json({ ok: true, serverTime: result.rows[0].server_time });
   } catch (error) {
     res.status(500).json({ ok: false, error: getPublicErrorMessage(error, "Health check failed.") });
+  }
+});
+
+router.post("/queries", async (req, res) => {
+  const { name, email, mobile, query } = req.body || {};
+
+  if (!name || !email || !mobile || !query) {
+    return res.status(400).json({ error: "name, email, mobile, and query are required" });
+  }
+
+  const normalizedMobile = String(mobile).replace(/\D/g, "");
+  if (normalizedMobile.length !== 10) {
+    return res.status(400).json({ error: "mobile must be exactly 10 digits" });
+  }
+
+  try {
+    await ensureQueriesTable();
+    const result = await pool.query(
+      `
+        INSERT INTO queries (name, email, mobile, query)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, name, email, mobile, query, created_at
+      `,
+      [name.trim(), email.toLowerCase().trim(), normalizedMobile, query.trim()]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: getPublicErrorMessage(error, "Failed to submit query.") });
   }
 });
 
@@ -392,6 +434,22 @@ router.get("/admin/students", requireAdmin, async (req, res) => {
         SELECT id, name, mobile, email, course, status, created_at
         FROM students
         ORDER BY id DESC
+      `
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/admin/queries", requireAdmin, async (_req, res) => {
+  try {
+    await ensureQueriesTable();
+    const result = await pool.query(
+      `
+        SELECT id, name, email, mobile, query, created_at
+        FROM queries
+        ORDER BY created_at DESC, id DESC
       `
     );
     res.json(result.rows);
