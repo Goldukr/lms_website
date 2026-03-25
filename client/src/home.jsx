@@ -12,7 +12,6 @@ const PROGRAM_CARDS = [
     title: "JEE-Advance",
     icon: "/assets/jee-new.png",
     iconClassName: "home-program-icon-engineering",
-    classes: ["Class 11th", "Class 12th", "Dropper"],
     description: "Your First Step Towards Becoming an enginneer",
     tone: "jee",
   },
@@ -20,7 +19,6 @@ const PROGRAM_CARDS = [
     title: "NEET-UG",
     icon: "/assets/neet-new.png",
     iconClassName: "home-program-icon-medical",
-    classes: ["Class 11th", "Class 12th", "Dropper"],
     description: "Your First Step Towards Becoming a Doctor",
     tone: "neet",
   },
@@ -28,7 +26,6 @@ const PROGRAM_CARDS = [
     title: "Foundation",
     icon: "/assets/foundation.png",
     iconClassName: "home-program-icon-foundation",
-    classes: ["Class 7th", "Class 8th", "Class 9th", "Class 10th"],
     description: "Build Your Strong Base with our Experts",
     tone: "foundation",
   },
@@ -124,26 +121,6 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
         <img src={program.icon} alt="" />
       </span>
     );
-  }
-
-  function getClassCourseTarget(programTone, classItem) {
-    const classKey = String(classItem || "").toLowerCase();
-    if (programTone === "jee") {
-      if (classKey.includes("11")) return "11 jee-advanced";
-      if (classKey.includes("12")) return "12 jee-advanced";
-      if (classKey.includes("dropper")) return "jee dropper";
-      return "jee-advanced";
-    }
-    if (programTone === "neet") {
-      if (classKey.includes("11")) return "11 neet";
-      if (classKey.includes("12")) return "12 neet";
-      if (classKey.includes("dropper")) return "neet dropper";
-      return "neet-ug";
-    }
-    if (programTone === "foundation") {
-      return "foundation";
-    }
-    return "";
   }
 
   return (
@@ -251,18 +228,6 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
             >
               {renderProgramIcon(program)}
               <h2>{program.title}</h2>
-              <div className="home-program-pills">
-                {program.classes.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    className="home-program-pill"
-                    onClick={() => onExploreCourses(getClassCourseTarget(program.tone, item))}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
               <p>{program.description}</p>
               <button
                 type="button"
