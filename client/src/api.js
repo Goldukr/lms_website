@@ -1,4 +1,4 @@
-const rawApiBase = import.meta.env.VITE_API_URL || "";
+/*const rawApiBase = import.meta.env.VITE_API_URL || "";
 
 export const API_BASE = rawApiBase.replace(/\/+$/, "");
 
@@ -26,3 +26,7 @@ export async function parseJsonResponse(response) {
     };
   }
 }
+*/
+const API = import.meta.env.VITE_API_URL;
+
+export default API;
