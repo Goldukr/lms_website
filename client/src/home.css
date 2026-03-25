@@ -548,27 +548,6 @@
   transition: color 0.25s ease;
 }
 
-.home-program-pills {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 22px;
-}
-
-.home-program-pill {
-  font: inherit;
-  padding: 9px 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(163, 172, 200, 0.55);
-  background: rgba(255, 255, 255, 0.62);
-  font-size: 0.9rem;
-  color: #344258;
-  min-width: 112px;
-  cursor: pointer;
-  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
-}
-
 .home-program-card p {
   margin: 0 auto 26px;
   max-width: 300px;
@@ -586,9 +565,7 @@
 }
 
 .home-program-card:hover .home-program-icon,
-.home-program-card:focus-visible .home-program-icon,
-.home-program-card:hover .home-program-pill,
-.home-program-card:focus-visible .home-program-pill {
+.home-program-card:focus-visible .home-program-icon {
   background: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.3);
   color: #f3f7ff;
@@ -1017,12 +994,6 @@
   .home-program-card h2 {
     margin: 10px 0 10px;
     font-size: 1.3rem;
-  }
-
-  .home-program-pill {
-    min-width: 78px;
-    padding: 6px 9px;
-    font-size: 0.76rem;
   }
 
   .home-program-btn {
