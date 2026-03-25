@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import "./sign.css";
+import { apiUrl, parseJsonResponse } from "./api";
 
 const COURSE_OPTIONS = ["11 NEET", "11 JEE- Advance", "12 NEET", "12 JEE-Advance", "NEET Dropper", "JEE Dropper", "Class 7", "Class 8", "Class 9", "Class 10"];
 const STRONG_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$/;
@@ -68,7 +69,7 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
     setSubmitError("");
     setSubmitSuccess("");
     try {
-      const response = await fetch("/api/auth/signup", {
+      const response = await fetch(apiUrl("/api/auth/signup"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -81,7 +82,7 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
         }),
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) {
         setSubmitError(data?.error || "Signup failed. Please try again.");
         return;
@@ -98,8 +99,8 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
       });
       setShowPassword(false);
       setShowConfirmPassword(false);
-    } catch (error) {
-      setSubmitError("Signup failed. Please try again.");
+    } catch (_error) {
+      setSubmitError("Signup failed. Check backend connection and try again.");
     } finally {
       setIsSubmitting(false);
     }

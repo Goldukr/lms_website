@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./admin.css";
+import { apiUrl, parseJsonResponse } from "./api";
 
 function AdminPanel({ token, onLogout, onBackHome }) {
   const [students, setStudents] = useState([]);
@@ -29,12 +30,12 @@ function AdminPanel({ token, onLogout, onBackHome }) {
     setError("");
     setActionError("");
     try {
-      const response = await fetch("/api/admin/users", {
+      const response = await fetch(apiUrl("/api/admin/users"), {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) {
         setError(data?.error || "Failed to load students.");
         setStudents([]);
@@ -52,13 +53,13 @@ function AdminPanel({ token, onLogout, onBackHome }) {
   async function approveStudent(id) {
     setActionError("");
     try {
-      const response = await fetch(`/api/admin/students/${id}/approve`, {
+      const response = await fetch(apiUrl(`/api/admin/students/${id}/approve`), {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = response.status === 204 ? null : await response.json();
+      const data = response.status === 204 ? null : await parseJsonResponse(response);
       if (!response.ok) {
         setActionError(data?.error || "Failed to approve student.");
         return;
@@ -74,13 +75,13 @@ function AdminPanel({ token, onLogout, onBackHome }) {
   async function approveAllStudents() {
     setActionError("");
     try {
-      const response = await fetch("/api/admin/students/approve-all", {
+      const response = await fetch(apiUrl("/api/admin/students/approve-all"), {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) {
         setActionError(data?.error || "Failed to approve all students.");
         return;
@@ -104,14 +105,14 @@ function AdminPanel({ token, onLogout, onBackHome }) {
     }
     setActionError("");
     try {
-      const response = await fetch(`/api/admin/students/${id}`, {
+      const response = await fetch(apiUrl(`/api/admin/students/${id}`), {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (!response.ok) {
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         setActionError(data?.error || "Failed to delete student.");
         return;
       }
@@ -128,14 +129,14 @@ function AdminPanel({ token, onLogout, onBackHome }) {
     }
     setActionError("");
     try {
-      const response = await fetch(`/api/admin/admins/${id}`, {
+      const response = await fetch(apiUrl(`/api/admin/admins/${id}`), {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       if (!response.ok) {
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         setActionError(data?.error || "Failed to delete admin.");
         return;
       }
@@ -156,13 +157,13 @@ function AdminPanel({ token, onLogout, onBackHome }) {
     }
     setActionError("");
     try {
-      const response = await fetch("/api/admin/users", {
+      const response = await fetch(apiUrl("/api/admin/users"), {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = response.status === 204 ? null : await response.json();
+      const data = response.status === 204 ? null : await parseJsonResponse(response);
       if (!response.ok) {
         setActionError(data?.error || "Failed to delete all users.");
         return;

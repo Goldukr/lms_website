@@ -926,12 +926,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 8px;
   }
 
   .home-actions {
     justify-content: flex-end;
     order: 3;
+    width: 100%;
   }
 
   .home-nav {
@@ -952,7 +954,12 @@
   }
 
   .home-hero {
-    grid-template-columns: 96px 1fr;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "intro"
+      "left"
+      "enquiry"
+      "map";
   }
 
   .home-float-rank {
@@ -1060,32 +1067,32 @@
 
   .home-float-main {
     order: 1;
-    width: 320px !important;
-    max-width: 320px !important;
-    min-width: 320px !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     margin: 0;
-    justify-self: start;
-    align-self: start;
+    justify-self: stretch;
+    align-self: stretch;
     padding: 12px 12px;
     border-radius: 20px;
   }
 
   .home-enquiry-card {
     order: 3;
-    width: 320px !important;
-    max-width: 320px !important;
-    min-width: 320px !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     margin: 0 auto;
-    justify-self: center;
-    align-self: center;
+    justify-self: stretch;
+    align-self: stretch;
   }
 
   .home-map-card {
     order: 4;
     margin-top: 0;
-    width: 320px !important;
-    max-width: 320px !important;
-    min-width: 320px !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     padding: 12px;
     margin-left: auto;
     margin-right: auto;
@@ -1134,11 +1141,13 @@
   }
 
   .home-left h1 {
-    font-size: 1.7rem;
+    font-size: clamp(1.7rem, 7vw, 2.2rem);
+    line-height: 1.12;
   }
 
   .home-points {
     font-size: 0.98rem;
+    padding-left: 18px;
   }
 
   .home-float-card {
@@ -1160,7 +1169,7 @@
 
   .home-map-frame,
   .home-map-frame iframe {
-    min-height: 60px;
+    min-height: 220px;
   }
 
   .home-enquiry-submit {
@@ -1173,6 +1182,32 @@
 
   .home-footer-head h3 {
     font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-main {
+    width: calc(100% - 20px);
+  }
+
+  .home-topbar {
+    padding: 10px 12px;
+  }
+
+  .home-actions {
+    gap: 8px;
+  }
+
+  .home-call,
+  .home-login {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .home-enquiry-card,
+  .home-map-card,
+  .home-float-main {
+    border-radius: 16px;
   }
 }
 

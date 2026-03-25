@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./sign.css";
+import { apiUrl, parseJsonResponse } from "./api";
 
 function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant }) {
   const [role, setRole] = useState("student");
@@ -31,7 +32,7 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant 
     setIsSubmitting(true);
     setSubmitError("");
     try {
-      const response = await fetch("/api/auth/signin", {
+      const response = await fetch(apiUrl("/api/auth/signin"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -40,14 +41,14 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant 
           role,
         }),
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) {
         setSubmitError(data?.error || "Sign in failed.");
         return;
       }
       onSignIn?.(data);
     } catch (_error) {
-      setSubmitError("Sign in failed.");
+      setSubmitError("Sign in failed. Check backend connection.");
     } finally {
       setIsSubmitting(false);
     }

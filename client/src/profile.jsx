@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./profile.css";
+import { apiUrl, parseJsonResponse } from "./api";
 
 const DEFAULT_PROFILE = {
   name: "",
@@ -14,12 +15,10 @@ function Profile({ onBackHome, onSaved, token, course }) {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/profile", {
+    fetch(apiUrl("/api/profile"), {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((response) =>
-        response.json().then((data) => ({ ok: response.ok, data }))
-      )
+      .then(async (response) => ({ ok: response.ok, data: await parseJsonResponse(response) }))
       .then(({ ok, data }) => {
         if (!ok) {
           setStatus(data?.error || "Failed to load profile.");
@@ -60,7 +59,7 @@ function Profile({ onBackHome, onSaved, token, course }) {
       return;
     }
     if (!token) return;
-    fetch("/api/profile", {
+    fetch(apiUrl("/api/profile"), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -68,9 +67,7 @@ function Profile({ onBackHome, onSaved, token, course }) {
       },
       body: JSON.stringify(form),
     })
-      .then((response) =>
-        response.json().then((data) => ({ ok: response.ok, data }))
-      )
+      .then(async (response) => ({ ok: response.ok, data: await parseJsonResponse(response) }))
       .then(({ ok, data }) => {
         if (!ok) {
           setStatus(data?.error || "Failed to update profile.");
