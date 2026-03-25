@@ -1,11 +1,11 @@
 ﻿require("dotenv").config();
-
-console.log("ENV CHECK:", process.env.DATABASE_URL);
+const DATABASE_URL = process.env.DATABASE_URL || "postgresql://postgres:ratnakar@localhost:5432/lms_db";
+console.log("ENV CHECK:", DATABASE_URL);
 
 const { Pool } = require("pg");
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },

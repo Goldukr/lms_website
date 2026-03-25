@@ -97,6 +97,23 @@ function getJwtSecret() {
   return process.env.JWT_SECRET || "dev_jwt_secret_change_me";
 }
 
+function getPublicErrorMessage(error, fallback = "Something went wrong. Please try again.") {
+  const message = String(error?.message || "").toLowerCase();
+
+  if (
+    message.includes("enotfound") ||
+    message.includes("getaddrinfo") ||
+    message.includes("database") ||
+    message.includes("connection") ||
+    message.includes("timeout") ||
+    message.includes("econnrefused")
+  ) {
+    return "Server database is not configured correctly.";
+  }
+
+  return fallback;
+}
+
 function requireAdmin(req, res, next) {
   const authHeader = req.headers.authorization || "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
@@ -137,7 +154,7 @@ router.get("/health", async (_req, res) => {
     const result = await pool.query("SELECT NOW() AS server_time");
     res.json({ ok: true, serverTime: result.rows[0].server_time });
   } catch (error) {
-    res.status(500).json({ ok: false, error: error.message });
+    res.status(500).json({ ok: false, error: getPublicErrorMessage(error, "Health check failed.") });
   }
 });
 
@@ -194,7 +211,7 @@ router.post("/auth/signup", async (req, res) => {
 
     return res.status(201).json({ role: "admin", ...result.rows[0] });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: getPublicErrorMessage(error, "Signup failed. Please try again.") });
   }
 });
 
@@ -285,7 +302,7 @@ router.post("/auth/signin", async (req, res) => {
       token,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: getPublicErrorMessage(error, "Sign in failed. Please try again.") });
   }
 });
 

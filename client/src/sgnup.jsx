@@ -1,11 +1,6 @@
 import { useMemo, useState } from "react";
 import "./sign.css";
 import { apiUrl, parseJsonResponse } from "./api";
-import API from "../api";
-
-fetch(`${API}/api/auth/signup`)  .then((response) => response.json())
-  .then((data) => console.log("Signup API response:", data))
-  .catch((error) => console.error("Error calling Signup API:", error));
 
 const COURSE_OPTIONS = ["11 NEET", "11 JEE- Advance", "12 NEET", "12 JEE-Advance", "NEET Dropper", "JEE Dropper", "Class 7", "Class 8", "Class 9", "Class 10"];
 const STRONG_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$/;
