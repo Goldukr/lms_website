@@ -47,9 +47,32 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const [queries, setQueries] = useState([]);
+  const [queryError, setQueryError] = useState("");
   const [navOpen, setNavOpen] = useState(false);
   const navRef = useRef(null);
   const toggleRef = useRef(null);
+
+  function getLocalQueries() {
+    return JSON.parse(localStorage.getItem("queries") || "[]");
+  }
+
+  function mergeQueries(serverQueries, localQueries) {
+    const merged = [...serverQueries];
+    const seen = new Set(serverQueries.map((item) => `${item.id}`));
+
+    for (const item of localQueries) {
+      const key = `${item.id}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(item);
+    }
+
+    return merged.sort((a, b) => {
+      const aTime = a?.created_at ? new Date(a.created_at).getTime() : 0;
+      const bTime = b?.created_at ? new Date(b.created_at).getTime() : 0;
+      return bTime - aTime;
+    });
+  }
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -93,7 +116,8 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
 
   async function refreshQueries() {
     if (!token) {
-      setQueries([]);
+      setQueryError("Missing admin session. Please sign in again.");
+      setQueries(getLocalQueries());
       return;
     }
 
@@ -105,12 +129,15 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
       });
       const data = await parseJsonResponse(response);
       if (!response.ok) {
-        setQueries([]);
+        setQueryError(data?.error || "Unable to load server queries. Showing local queries only.");
+        setQueries(getLocalQueries());
         return;
       }
-      setQueries(Array.isArray(data) ? data : []);
+      setQueryError("");
+      setQueries(mergeQueries(Array.isArray(data) ? data : [], getLocalQueries()));
     } catch (_error) {
-      setQueries([]);
+      setQueryError("Unable to reach query service. Showing local queries only.");
+      setQueries(getLocalQueries());
     }
   }
 
@@ -234,6 +261,7 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
                   Refresh
                 </button>
               </div>
+              {queryError && <p className="form-error">{queryError}</p>}
               <div className="admin-query-table">
                 <div className="admin-query-row admin-query-header">
                   <span>Name</span>

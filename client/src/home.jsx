@@ -53,6 +53,11 @@ const FOOTER_GROUPS = [
 
 const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Schools", "Legal & Accessibility"];
 
+function saveQueryToLocal(entry) {
+  const existing = JSON.parse(localStorage.getItem("queries") || "[]");
+  localStorage.setItem("queries", JSON.stringify([entry, ...existing]));
+}
+
 function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
   const [navOpen, setNavOpen] = useState(false);
   const navRef = useRef(null);
@@ -96,12 +101,23 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick }) {
         return;
       }
 
+      saveQueryToLocal(data || {
+        id: `${Date.now()}`,
+        ...queryForm,
+        created_at: new Date().toISOString(),
+      });
       setQueryForm({ name: "", email: "", mobile: "", query: "" });
       setQueryStatus("Query submitted.");
       setTimeout(() => setQueryStatus(""), 2000);
     } catch (_error) {
-      setQueryStatus("Failed to submit query.");
-      setTimeout(() => setQueryStatus(""), 2500);
+      saveQueryToLocal({
+        id: `${Date.now()}`,
+        ...queryForm,
+        created_at: new Date().toISOString(),
+      });
+      setQueryForm({ name: "", email: "", mobile: "", query: "" });
+      setQueryStatus("Query saved locally. Backend sync is unavailable right now.");
+      setTimeout(() => setQueryStatus(""), 3000);
     }
   }
 

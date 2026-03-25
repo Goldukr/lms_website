@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./home.css";
 import screenSaverImageOne from "../web design.png";
 import screenSaverImageTwo from "../web2.png";
+import { apiUrl, parseJsonResponse } from "./api";
 
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
 
@@ -27,6 +28,11 @@ const FOOTER_GROUPS = [
 
 const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Schools", "Legal & Accessibility"];
 
+function saveQueryToLocal(entry) {
+  const existing = JSON.parse(localStorage.getItem("queries") || "[]");
+  localStorage.setItem("queries", JSON.stringify([entry, ...existing]));
+}
+
 function StudentHome({ onExploreCourses, onBrandClick, onLogout, userName, onGoCourses, onGoProfile, userAvatar }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
@@ -50,7 +56,7 @@ function StudentHome({ onExploreCourses, onBrandClick, onLogout, userName, onGoC
     setQueryForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function onQuerySubmit(event) {
+  async function onQuerySubmit(event) {
     event.preventDefault();
     if (queryForm.mobile.length !== 10) {
       setQueryStatus("Mobile number must be exactly 10 digits.");
@@ -58,16 +64,37 @@ function StudentHome({ onExploreCourses, onBrandClick, onLogout, userName, onGoC
       return;
     }
 
-    const entry = {
-      id: `${Date.now()}`,
-      ...queryForm,
-      created_at: new Date().toISOString(),
-    };
-    const existing = JSON.parse(localStorage.getItem("queries") || "[]");
-    localStorage.setItem("queries", JSON.stringify([entry, ...existing]));
-    setQueryForm({ name: "", email: "", mobile: "", query: "" });
-    setQueryStatus("Query submitted.");
-    setTimeout(() => setQueryStatus(""), 2000);
+    try {
+      const response = await fetch(apiUrl("/api/queries"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(queryForm),
+      });
+      const data = await parseJsonResponse(response);
+      if (!response.ok) {
+        setQueryStatus(data?.error || "Failed to submit query.");
+        setTimeout(() => setQueryStatus(""), 2500);
+        return;
+      }
+
+      saveQueryToLocal(data || {
+        id: `${Date.now()}`,
+        ...queryForm,
+        created_at: new Date().toISOString(),
+      });
+      setQueryForm({ name: "", email: "", mobile: "", query: "" });
+      setQueryStatus("Query submitted.");
+      setTimeout(() => setQueryStatus(""), 2000);
+    } catch (_error) {
+      saveQueryToLocal({
+        id: `${Date.now()}`,
+        ...queryForm,
+        created_at: new Date().toISOString(),
+      });
+      setQueryForm({ name: "", email: "", mobile: "", query: "" });
+      setQueryStatus("Query saved locally. Backend sync is unavailable right now.");
+      setTimeout(() => setQueryStatus(""), 3000);
+    }
   }
 
   useEffect(() => {
