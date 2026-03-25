@@ -189,7 +189,7 @@ function AdminPanel({ token, onLogout, onBackHome }) {
       <div className="admin-hero" />
       <div className="admin-shell">
         <header className="admin-header">
-          <div>
+          <div className="admin-copy">
             <p className="admin-eyebrow">Admin Control</p>
             <h1>Student Records</h1>
             <p className="admin-subtitle">Review recently registered users.</p>
@@ -271,9 +271,9 @@ function AdminPanel({ token, onLogout, onBackHome }) {
                 </p>
               ) : (
                 <div className="admin-table">
-                  <div className="admin-row admin-row-header">
-                    <span>Name</span>
-                    <span>Role</span>
+                <div className="admin-row admin-row-header">
+                  <span>Name</span>
+                  <span>Role</span>
                     <span>Mobile</span>
                     <span>Email</span>
                     <span>Course</span>
@@ -285,13 +285,13 @@ function AdminPanel({ token, onLogout, onBackHome }) {
                     .filter((student) => roleFilter === "all" || student.role === roleFilter)
                     .map((student) => (
                       <div className="admin-row" key={`${student.role}-${student.id}`}>
-                        <span>{student.name}</span>
-                        <span>{student.role}</span>
-                        <span>{student.mobile}</span>
-                        <span>{student.email}</span>
-                        <span>{student.course || "-"}</span>
-                        <span>{student.role === "student" ? student.status || "pending" : "-"}</span>
-                        <span>{student.created_at ? new Date(student.created_at).toLocaleString() : "-"}</span>
+                        <span data-label="Name">{student.name}</span>
+                        <span data-label="Role">{student.role}</span>
+                        <span data-label="Mobile">{student.mobile}</span>
+                        <span data-label="Email">{student.email}</span>
+                        <span data-label="Course">{student.course || "-"}</span>
+                        <span data-label="Status">{student.role === "student" ? student.status || "pending" : "-"}</span>
+                        <span data-label="Created">{student.created_at ? new Date(student.created_at).toLocaleString() : "-"}</span>
                         <span className="admin-actions-cell">
                           {student.role === "student" && student.status !== "approved" && (
                             <button

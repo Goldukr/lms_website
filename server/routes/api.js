@@ -458,6 +458,24 @@ router.get("/admin/queries", requireAdmin, async (_req, res) => {
   }
 });
 
+router.delete("/admin/queries/:id", requireAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: "invalid query id" });
+  }
+
+  try {
+    await ensureQueriesTable();
+    const result = await pool.query("DELETE FROM queries WHERE id = $1", [id]);
+    if (!result.rowCount) {
+      return res.status(404).json({ error: "query not found" });
+    }
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.post("/admin/notes", requireAdmin, upload.single("file"), async (req, res) => {
   const { course, subject, chapter } = req.body || {};
   if (!course || !subject || !chapter || !req.file) {

@@ -48,6 +48,7 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
   const menuRef = useRef(null);
   const [queries, setQueries] = useState([]);
   const [queryError, setQueryError] = useState("");
+  const [queryActionError, setQueryActionError] = useState("");
   const [navOpen, setNavOpen] = useState(false);
   const navRef = useRef(null);
   const toggleRef = useRef(null);
@@ -95,6 +96,18 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
   }, [token]);
 
   useEffect(() => {
+    if (!token) return undefined;
+
+    const intervalId = window.setInterval(() => {
+      refreshQueries({ silent: true });
+    }, 10000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [token]);
+
+  useEffect(() => {
     function handleClickOutside(event) {
       if (!navOpen) return;
       const dropdown = navRef.current;
@@ -114,9 +127,12 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
   }, [navOpen]);
 
 
-  async function refreshQueries() {
+  async function refreshQueries(options = {}) {
+    const { silent = false } = options;
     if (!token) {
-      setQueryError("Missing admin session. Please sign in again.");
+      if (!silent) {
+        setQueryError("Missing admin session. Please sign in again.");
+      }
       setQueries(getLocalQueries());
       return;
     }
@@ -129,15 +145,47 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
       });
       const data = await parseJsonResponse(response);
       if (!response.ok) {
-        setQueryError(data?.error || "Unable to load server queries. Showing local queries only.");
+        if (!silent) {
+          setQueryError(data?.error || "Unable to load server queries. Showing local queries only.");
+        }
         setQueries(getLocalQueries());
         return;
       }
       setQueryError("");
       setQueries(mergeQueries(Array.isArray(data) ? data : [], getLocalQueries()));
     } catch (_error) {
-      setQueryError("Unable to reach query service. Showing local queries only.");
+      if (!silent) {
+        setQueryError("Unable to reach query service. Showing local queries only.");
+      }
       setQueries(getLocalQueries());
+    }
+  }
+
+  async function deleteQuery(id) {
+    const confirmed = window.confirm("Are you sure you want to delete this query?");
+    if (!confirmed) return;
+
+    setQueryActionError("");
+
+    try {
+      const response = await fetch(apiUrl(`/api/admin/queries/${id}`), {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const data = response.status === 204 ? null : await parseJsonResponse(response);
+        setQueryActionError(data?.error || "Failed to delete query.");
+        return;
+      }
+
+      setQueries((prev) => prev.filter((item) => item.id !== id));
+      const nextLocalQueries = getLocalQueries().filter((item) => item.id !== id);
+      localStorage.setItem("queries", JSON.stringify(nextLocalQueries));
+    } catch (_error) {
+      setQueryActionError("Failed to delete query.");
     }
   }
 
@@ -262,6 +310,7 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
                 </button>
               </div>
               {queryError && <p className="form-error">{queryError}</p>}
+              {queryActionError && <p className="form-error">{queryActionError}</p>}
               <div className="admin-query-table">
                 <div className="admin-query-row admin-query-header">
                   <span>Name</span>
@@ -269,10 +318,12 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
                   <span>Mobile</span>
                   <span>Query</span>
                   <span>Time</span>
+                  <span>Action</span>
                 </div>
                 {queries.length === 0 && (
                   <div className="admin-query-row">
                     <span>No queries yet.</span>
+                    <span />
                     <span />
                     <span />
                     <span />
@@ -286,6 +337,11 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
                     <span>{item.mobile}</span>
                     <span>{item.query}</span>
                     <span>{item.created_at ? new Date(item.created_at).toLocaleString() : "-"}</span>
+                    <span className="admin-query-action-cell">
+                      <button type="button" className="admin-mini-btn admin-delete" onClick={() => deleteQuery(item.id)}>
+                        Delete
+                      </button>
+                    </span>
                   </div>
                 ))}
               </div>

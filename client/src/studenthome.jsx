@@ -354,19 +354,8 @@ function StudentHome({ onExploreCourses, onBrandClick, onLogout, userName, onGoC
       <section
         id="about-us"
         className="home-about-us"
-        style={{
-          backgroundColor: "#e2ecf5",
-          borderTop: "1px solid rgba(148, 163, 184, 0.2)",
-          borderBottom: "1px solid rgba(148, 163, 184, 0.2)",
-          padding: "60px 40px",
-          margin: "60px 0",
-          width: "100%",
-          boxSizing: "border-box",
-          boxShadow: "0 10px 40px rgba(15, 23, 42, 0.08)",
-          color: "#334155",
-        }}
       >
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        <div className="home-about-shell">
           <h3 style={{ color: "#1e40af", fontSize: "1.6rem", margin: "0 0 16px", display: "flex", alignItems: "center", gap: "12px", fontWeight: "800" }}>
             <span aria-hidden="true" style={{ fontSize: "1.8rem" }}>Teacher</span> About Us
           </h3>
@@ -381,7 +370,7 @@ function StudentHome({ onExploreCourses, onBrandClick, onLogout, userName, onGoC
             We believe that success is not just about hard work - it's about learning smart, staying consistent, and having the right mentorship. That's why our teaching methodology focuses on concept clarity, practical understanding, and continuous improvement, ensuring that every student reaches their full potential.
           </p>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px", marginBottom: "32px" }}>
+          <div className="home-about-grid">
             <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
               <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 12px", display: "flex", alignItems: "center", gap: "10px" }}>
                 <span aria-hidden="true">Vision</span> Our Vision
@@ -408,7 +397,7 @@ function StudentHome({ onExploreCourses, onBrandClick, onLogout, userName, onGoC
             <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 20px", display: "flex", alignItems: "center", gap: "10px" }}>
               <span aria-hidden="true">Idea</span> What Makes Us Different
             </h5>
-            <ul style={{ margin: 0, paddingLeft: 0, listStyleType: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+            <ul className="home-about-diff-grid">
               <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
                 <span aria-hidden="true" style={{ fontSize: "1.4rem" }}></span>
                 <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Experienced Faculty</strong> Learn from experts with strong academic backgrounds</span>
