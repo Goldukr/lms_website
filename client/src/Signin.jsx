@@ -43,12 +43,12 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant 
       });
       const data = await parseJsonResponse(response);
       if (!response.ok) {
-        setSubmitError(data?.error || "Sign in failed.");
+        setSubmitError(data?.error || data?.raw || "Sign in failed.");
         return;
       }
       onSignIn?.(data);
-    } catch (_error) {
-      setSubmitError("Sign in failed. Check backend connection.");
+    } catch (error) {
+      setSubmitError(error?.message || "Sign in failed. Check backend connection.");
     } finally {
       setIsSubmitting(false);
     }

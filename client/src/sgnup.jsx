@@ -1,20 +1,6 @@
 import { useMemo, useState } from "react";
 import "./sign.css";
-app.post("/api/auth/signup", async (req, res) => {
-  const { name, mobile, email, password } = req.body;
-
-  try {
-    const result = await pool.query(
-      "INSERT INTO users (name, mobile, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, mobile, email, password]
-    );
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Signup failed" });
-  }
-});
+import { apiUrl, parseJsonResponse } from "./api";
 
 const COURSE_OPTIONS = ["11 NEET", "11 JEE- Advance", "12 NEET", "12 JEE-Advance", "NEET Dropper", "JEE Dropper", "Class 7", "Class 8", "Class 9", "Class 10"];
 const STRONG_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$/;
@@ -98,7 +84,7 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
 
       const data = await parseJsonResponse(response);
       if (!response.ok) {
-        setSubmitError(data?.error || "Signup failed. Please try again.");
+        setSubmitError(data?.error || data?.raw || "Signup failed. Please try again.");
         return;
       }
 
@@ -113,8 +99,8 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
       });
       setShowPassword(false);
       setShowConfirmPassword(false);
-    } catch (_error) {
-      setSubmitError("Signup failed. Check backend connection and try again.");
+    } catch (error) {
+      setSubmitError(error?.message || "Signup failed. Check backend connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
