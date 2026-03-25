@@ -48,6 +48,7 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
   const [queries, setQueries] = useState([]);
   const [navOpen, setNavOpen] = useState(false);
   const navRef = useRef(null);
+  const toggleRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -74,7 +75,9 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
     function handleClickOutside(event) {
       if (!navOpen) return;
       const dropdown = navRef.current;
+      const toggle = toggleRef.current;
       if (dropdown && dropdown.contains(event.target)) return;
+      if (toggle && toggle.contains(event.target)) return;
       setNavOpen(false);
     }
 
@@ -129,8 +132,9 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
           onClick={() => setNavOpen((prev) => !prev)}
           aria-expanded={navOpen}
           aria-label="Toggle menu"
+          ref={toggleRef}
         >
-          Menu
+          <i className="bi bi-justify" aria-hidden="true"></i>
         </button>
 
         <div className="home-actions">
@@ -171,9 +175,15 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
               className="home-nav-item"
               onClick={
                 item === "Home"
-                  ? onBrandClick
+                  ? () => {
+                      onBrandClick?.();
+                      setNavOpen(false);
+                    }
                   : item === "Courses"
-                    ? onExploreCourses
+                    ? () => {
+                        onExploreCourses?.();
+                        setNavOpen(false);
+                      }
                     : undefined
               }
             >
