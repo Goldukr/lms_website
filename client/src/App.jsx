@@ -32,6 +32,10 @@ function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [loginPrefill, setLoginPrefill] = useState({
+    role: "student",
+    identifier: "",
+  });
   const [homeCourseTarget, setHomeCourseTarget] = useState("");
   const [courseBackTarget, setCourseBackTarget] = useState("course");
   const [auth, setAuth] = useState(() => {
@@ -56,6 +60,14 @@ function App() {
       setPage("home");
     }
   }, [page]);
+
+  useEffect(() => {
+    if (showLoginModal) return;
+    setLoginPrefill({
+      role: "student",
+      identifier: "",
+    });
+  }, [showLoginModal]);
 
   function getCoursePage(course) {
     const normalized = String(course || "")
@@ -177,6 +189,8 @@ function App() {
       <Signin
         variant="modal"
         onClose={() => setShowLoginModal(false)}
+        initialRole={loginPrefill.role}
+        initialIdentifier={loginPrefill.identifier}
         onCreateAccount={() => {
           setShowLoginModal(false);
           setShowSignupModal(true);
@@ -859,6 +873,8 @@ function App() {
               <Signin
                 variant="modal"
                 onClose={() => setShowLoginModal(false)}
+                initialRole={loginPrefill.role}
+                initialIdentifier={loginPrefill.identifier}
                 onCreateAccount={() => {
                   setShowLoginModal(false);
                   setShowSignupModal(true);
@@ -885,8 +901,12 @@ function App() {
           <Sgnup
             variant="modal"
             onClose={() => setShowSignupModal(false)}
-            onBackToSignin={() => {
+            onBackToSignin={(prefill) => {
               setShowSignupModal(false);
+              setLoginPrefill({
+                role: prefill?.role || "student",
+                identifier: prefill?.identifier || "",
+              });
               setShowLoginModal(true);
             }}
           />
@@ -899,4 +919,3 @@ function App() {
 }
 
 export default App;
-

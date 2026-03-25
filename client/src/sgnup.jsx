@@ -99,6 +99,10 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
       });
       setShowPassword(false);
       setShowConfirmPassword(false);
+      onBackToSignin?.({
+        role,
+        identifier: form.email,
+      });
     } catch (error) {
       setSubmitError(error?.message || "Signup failed. Check backend connection and try again.");
     } finally {
@@ -274,8 +278,8 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
             </button>
           </form>
 
-          <button type="button" className="secondary-btn create-account-bottom" onClick={onBackToSignin}>
-            Back to Sign In
+          <button type="button" className="secondary-btn create-account-bottom" onClick={() => onBackToSignin?.()}>
+            {submitSuccess ? "Continue to Sign In" : "Back to Sign In"}
           </button>
         </main>
       </div>

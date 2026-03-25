@@ -1,16 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./sign.css";
 import { apiUrl, parseJsonResponse } from "./api";
 
-function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant }) {
-  const [role, setRole] = useState("student");
+function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant, initialRole = "student", initialIdentifier = "" }) {
+  const [role, setRole] = useState(initialRole);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
-    identifier: "",
+    identifier: initialIdentifier,
     password: "",
   });
+
+  useEffect(() => {
+    setRole(initialRole);
+  }, [initialRole]);
+
+  useEffect(() => {
+    setForm({
+      identifier: initialIdentifier,
+      password: "",
+    });
+    setSubmitError("");
+    setShowPassword(false);
+  }, [initialIdentifier]);
 
   function onChange(event) {
     const { name, value } = event.target;
