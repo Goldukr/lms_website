@@ -5,6 +5,7 @@ import screenSaverImageTwo from "../web2.png";
 import { apiUrl, parseJsonResponse } from "./api";
 
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
+const WHATSAPP_NUMBER = "919783093793";
 
 const SCREENSAVER_IMAGES = [screenSaverImageOne, screenSaverImageTwo];
 const FOOTER_GROUPS = [
@@ -158,7 +159,7 @@ function StudentHome({ onExploreCourses, onBrandClick, onLogout, userName, onGoC
         <div className="home-actions">
           <a
             className="home-call home-chat"
-            href="https://wa.me/9783093793"
+            href={`https://wa.me/${WHATSAPP_NUMBER}`}
             target="_blank"
             rel="noopener noreferrer"
           >
