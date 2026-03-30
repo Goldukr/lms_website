@@ -29,6 +29,10 @@ const FOOTER_GROUPS = [
 
 const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Schools", "Legal & Accessibility"];
 
+function scrollToAboutSection() {
+  document.getElementById("about-us")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function saveQueryToLocal(entry) {
   const existing = JSON.parse(localStorage.getItem("queries") || "[]");
   localStorage.setItem("queries", JSON.stringify([entry, ...existing]));
@@ -479,7 +483,12 @@ function StudentHome({ onExploreCourses, onBrandClick, onLogout, userName, onGoC
 
           <div className="home-footer-links">
             {FOOTER_LINKS.map((link) => (
-              <button key={link} type="button" className="home-footer-link">
+              <button
+                key={link}
+                type="button"
+                className="home-footer-link"
+                onClick={link === "About" ? scrollToAboutSection : undefined}
+              >
                 {link}
               </button>
             ))}
