@@ -408,8 +408,8 @@ body {
   border: 1px solid rgba(120, 160, 220, 0.55);
   box-shadow: 0 24px 40px rgba(8, 12, 30, 0.35);
   backdrop-filter: blur(16px) saturate(140%);
-  max-height: 85vh;
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .signin-close {
@@ -454,6 +454,5 @@ body {
 .signup-link:hover {
   text-decoration: underline;
 }
-
 
 
