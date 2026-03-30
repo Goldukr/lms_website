@@ -815,7 +815,7 @@ body,
     var(--home-footer-bg);
   border-top: none;
   color: var(--home-footer-text);
-  margin-top: 40px;
+  margin-top: 0;
 }
 
 .site-copyright {
