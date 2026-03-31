@@ -122,11 +122,6 @@ function Home({ onLoginClick, onExploreCourses, onBrandClick, onAdminAccess }) {
         return;
       }
 
-      saveQueryToLocal(data || {
-        id: `${Date.now()}`,
-        ...queryForm,
-        created_at: new Date().toISOString(),
-      });
       setQueryForm({ name: "", email: "", mobile: "", query: "" });
       setQueryStatus("Query submitted.");
       setTimeout(() => setQueryStatus(""), 2000);

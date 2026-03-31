@@ -62,6 +62,10 @@ function TeacherHomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, 
     return Number.isInteger(numericId) && numericId > 0 && numericId <= 2147483647;
   }
 
+  function getClientOnlyQueries() {
+    return getLocalQueries().filter((item) => item?.localOnly || !isServerQueryId(item?.id));
+  }
+
   function mergeQueries(serverQueries, localQueries) {
     const merged = [...serverQueries];
     const seen = new Set(serverQueries.map((item) => `${item.id}`));
@@ -137,11 +141,12 @@ function TeacherHomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, 
       if (!silent) {
         setQueryError("Missing teacher session. Please sign in again.");
       }
-      setQueries(getLocalQueries());
+      setQueries(getClientOnlyQueries());
       return;
     }
 
     try {
+      setQueryActionError("");
       const response = await fetch(apiUrl("/api/admin/queries"), {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -152,16 +157,18 @@ function TeacherHomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, 
         if (!silent) {
           setQueryError(data?.error || "Unable to load server queries. Showing local queries only.");
         }
-        setQueries(getLocalQueries());
+        setQueries(getClientOnlyQueries());
         return;
       }
+      const clientOnlyQueries = getClientOnlyQueries();
+      localStorage.setItem("queries", JSON.stringify(clientOnlyQueries));
       setQueryError("");
-      setQueries(mergeQueries(Array.isArray(data) ? data : [], getLocalQueries()));
+      setQueries(mergeQueries(Array.isArray(data) ? data : [], clientOnlyQueries));
     } catch (_error) {
       if (!silent) {
         setQueryError("Unable to reach query service. Showing local queries only.");
       }
-      setQueries(getLocalQueries());
+      setQueries(getClientOnlyQueries());
     }
   }
 
@@ -188,6 +195,11 @@ function TeacherHomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, 
 
       if (!response.ok) {
         const data = response.status === 204 ? null : await parseJsonResponse(response);
+        if (response.status === 404) {
+          setQueries((prev) => prev.filter((item) => `${item.id}` !== `${id}`));
+          localStorage.setItem("queries", JSON.stringify(nextLocalQueries));
+          return;
+        }
         setQueryActionError(data?.error || "Failed to delete query.");
         return;
       }
