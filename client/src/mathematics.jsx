@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import "./course.css";
+import { API_BASE } from "./api";
 
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
 
-const API_BASE = import.meta.env.VITE_API_URL || "";
 
 function Mathematics({ onBackHome, onBackCourses, courseLabel = "11 JEE-Advance", courseQuery = "11 JEE-Advance" , auth, userName, userAvatar, onLogout, onGoProfile, onLoginClick}) {
   const [menuOpen, setMenuOpen] = useState(false);

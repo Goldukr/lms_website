@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./course.css";
+import { API_BASE } from "./api";
 
 const NAV_ITEMS = ["Home", "Teacher", "Test Series", "About Us"];
 const COURSE_OPTIONS = ["11 NEET", "11 JEE-Advance", "12 NEET", "12 JEE-Advance", "NEET Dropper", "JEE Dropper", "Class 7", "Class 8", "Class 9", "Class 10"];
@@ -26,7 +27,6 @@ const FOOTER_GROUPS = [
 ];
 
 const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Admin", "Legal & Accessibility"];
-const API_BASE = import.meta.env.VITE_API_URL || "";
 const COURSE_SUBJECT_MAP = {
   "11 NEET": ["Physics", "Chemistry", "Biology"],
   "12 NEET": ["Physics", "Chemistry", "Biology"],

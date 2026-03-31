@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./course.css";
+import { API_BASE } from "./api";
 
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
-const API_BASE = import.meta.env.VITE_API_URL || "";
 
 function SocialScience({ onBackHome, onBackCourses, courseLabel = "Class 7", courseQuery = "Class 7" , auth, userName, userAvatar, onLogout, onGoProfile, onLoginClick}) {
   const [menuOpen, setMenuOpen] = useState(false);
