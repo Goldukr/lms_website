@@ -194,6 +194,29 @@
   color: var(--course-accent);
 }
 
+.home-about-us {
+  background-color: #e2ecf5;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  padding: clamp(32px, 6vw, 60px) clamp(18px, 5vw, 40px);
+  margin: clamp(32px, 6vw, 60px) 0 0;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+  color: #334155;
+}
+
+.home-about-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.home-about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 24px;
+}
+
 .course-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

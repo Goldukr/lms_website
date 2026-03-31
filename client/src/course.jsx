@@ -34,7 +34,7 @@ const FOOTER_GROUPS = [
 
 const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Schools", "Legal & Accessibility"];
 
-function Course({ onBackHome, onBackCourses, onSelectNeet11, onSelectNeet12, onSelectNeetDropper, onSelectJee11, onSelectJee12, onSelectJeeDropper, selectedCourse, onSelectFoundation , auth, userName, userAvatar, onLogout, onGoProfile, onLoginClick}) {
+function Course({ onBackHome, onBackCourses, onSelectNeet11, onSelectNeet12, onSelectNeetDropper, onSelectJee11, onSelectJee12, onSelectJeeDropper, selectedCourse, onSelectFoundation , auth, userName, userAvatar, onLogout, onGoProfile, onLoginClick, onAdminAccess}) {
   const [activeTrack, setActiveTrack] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
@@ -777,6 +777,74 @@ function Course({ onBackHome, onBackCourses, onSelectNeet11, onSelectNeet12, onS
         </div>
       </section>
 
+      <section className="home-about-us">
+        <div className="home-about-shell">
+          <h3 style={{ color: "#1e40af", fontSize: "1.6rem", margin: "0 0 16px", display: "flex", alignItems: "center", gap: "12px", fontWeight: "800" }}>
+            <span role="img" aria-label="Rocket" style={{ fontSize: "1.8rem" }}>🚀</span> Discover AMITJEE
+          </h3>
+          <h4 style={{ color: "#0f172a", fontSize: "1.3rem", fontWeight: "700", margin: "0 0 24px", lineHeight: "1.4" }}>
+            Step into a World of Smart Learning and Real Results
+          </h4>
+          <p style={{ margin: "0 0 16px", fontSize: "1.05rem", lineHeight: "1.7", color: "#334155" }}>
+            At AMITJEE Career Institute, we believe that success is not just about hard work. It is about learning smart, staying consistent, and following the right strategy. Our goal is to create an environment where students are guided, motivated, and equipped with everything they need to excel.
+          </p>
+          <p style={{ margin: "0 0 16px", fontSize: "1.05rem", lineHeight: "1.7", color: "#334155" }}>
+            We combine deep concept clarity, strategic preparation, and continuous mentorship to ensure that every student not only understands subjects thoroughly but also knows how to apply them effectively in exams like JEE and NEET.
+          </p>
+          <p style={{ margin: 0, fontSize: "1.05rem", lineHeight: "1.7", color: "#334155" }}>
+            Our approach focuses on building a strong academic foundation, sharpening analytical thinking, and developing the confidence to solve even the most challenging problems. With structured study plans, regular assessments, and personalized guidance, students are always on the right path toward improvement.
+          </p>
+        </div>
+      </section>
+
+      <section className="home-about-us">
+        <div className="home-about-shell">
+          <h3 style={{ color: "#1e40af", fontSize: "1.6rem", margin: "0 0 16px", display: "flex", alignItems: "center", gap: "12px", fontWeight: "800" }}>
+            <span role="img" aria-label="Legal" style={{ fontSize: "1.8rem" }}>⚖️</span> Legal & Accessibility
+          </h3>
+          <h4 style={{ color: "#0f172a", fontSize: "1.3rem", fontWeight: "700", margin: "0 0 24px", lineHeight: "1.4" }}>
+            Committed to Transparency, Privacy & Inclusive Access
+          </h4>
+          <p style={{ margin: "0 0 24px", fontSize: "1.05rem", lineHeight: "1.7", color: "#334155" }}>
+            At AMITJEE Career Institute, we value trust, transparency, and accessibility. We are committed to protecting user information, maintaining ethical standards, and ensuring that our platform is accessible to all students.
+          </p>
+          <div className="home-about-grid">
+            <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
+              <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 12px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <span role="img" aria-label="Privacy">🔒</span> Privacy & Data Protection
+              </h5>
+              <p style={{ margin: 0, fontSize: "1rem", lineHeight: "1.7", color: "#475569" }}>
+                We respect your privacy and ensure that all personal information is handled securely. Any data shared with us is used only to improve your learning experience and is never misused or shared without consent.
+              </p>
+            </div>
+            <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
+              <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 12px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <span role="img" aria-label="Terms">📜</span> Terms & Conditions
+              </h5>
+              <p style={{ margin: 0, fontSize: "1rem", lineHeight: "1.7", color: "#475569" }}>
+                By using our website and services, users agree to follow our guidelines and policies. These terms are designed to ensure a safe, fair, and productive environment for all students.
+              </p>
+            </div>
+            <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
+              <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 12px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <span role="img" aria-label="Accessibility">♿</span> Accessibility Commitment
+              </h5>
+              <p style={{ margin: 0, fontSize: "1rem", lineHeight: "1.7", color: "#475569" }}>
+                We strive to make our website accessible and user-friendly for everyone, including individuals with different abilities. Our goal is to provide an inclusive learning experience without barriers.
+              </p>
+            </div>
+            <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
+              <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 12px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <span role="img" aria-label="Policy">⚖️</span> Fair Use & Content Policy
+              </h5>
+              <p style={{ margin: 0, fontSize: "1rem", lineHeight: "1.7", color: "#475569" }}>
+                All study materials, content, and resources provided by AMITJEE are for educational purposes only. Unauthorized distribution or misuse of content is strictly prohibited.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <footer className="course-footer">
         <div className="course-footer-shell">
           <div className="course-footer-head">
@@ -799,7 +867,12 @@ function Course({ onBackHome, onBackCourses, onSelectNeet11, onSelectNeet12, onS
 
           <div className="course-footer-links">
             {FOOTER_LINKS.map((link) => (
-              <button key={link} type="button" className="course-footer-link">
+              <button
+                key={link}
+                type="button"
+                className="course-footer-link"
+                onClick={link === "For Admin" ? onAdminAccess : undefined}
+              >
                 {link}
               </button>
             ))}
@@ -814,4 +887,3 @@ function Course({ onBackHome, onBackCourses, onSelectNeet11, onSelectNeet12, onS
 }
 
 export default Course;
-

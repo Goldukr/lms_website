@@ -57,11 +57,17 @@ async function ensureAdminsTable() {
       name TEXT NOT NULL,
       mobile TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
+      account_type TEXT NOT NULL DEFAULT 'admin',
+      status TEXT NOT NULL DEFAULT 'approved',
+      faculty TEXT,
       password_hash TEXT NOT NULL,
       password_salt TEXT NOT NULL,
       created_at TIMESTAMP NOT NULL DEFAULT NOW()
     )
   `);
+  await pool.query(`ALTER TABLE admins ADD COLUMN IF NOT EXISTS account_type TEXT NOT NULL DEFAULT 'admin'`);
+  await pool.query(`ALTER TABLE admins ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'approved'`);
+  await pool.query(`ALTER TABLE admins ADD COLUMN IF NOT EXISTS faculty TEXT`);
 }
 
 async function ensureNotesTable() {
@@ -200,8 +206,18 @@ router.post("/queries", async (req, res) => {
   }
 });
 
+router.get("/auth/admin-signup-status", async (_req, res) => {
+  try {
+    await ensureAdminsTable();
+    const result = await pool.query("SELECT id FROM admins WHERE account_type = 'admin' LIMIT 1");
+    res.json({ adminExists: result.rowCount > 0 });
+  } catch (error) {
+    res.status(500).json({ error: getPublicErrorMessage(error, "Failed to load admin signup status.") });
+  }
+});
+
 router.post("/auth/signup", async (req, res) => {
-  const { name, mobile, email, role, course, password } = req.body || {};
+  const { name, mobile, email, role, course, faculty, password } = req.body || {};
 
   if (!name || !mobile || !email || !role || !password) {
     return res.status(400).json({ error: "name, mobile, email, role, and password are required" });
@@ -220,6 +236,12 @@ router.post("/auth/signup", async (req, res) => {
       await ensureStudentsTable();
     } else {
       await ensureAdminsTable();
+      if (!faculty) {
+        const existingAdmins = await pool.query("SELECT id FROM admins WHERE account_type = 'admin' LIMIT 1");
+        if (existingAdmins.rowCount) {
+          return res.status(403).json({ error: "Admin signup is closed because an admin account already exists." });
+        }
+      }
     }
 
     const table = role === "student" ? "students" : "admins";
@@ -244,11 +266,20 @@ router.post("/auth/signup", async (req, res) => {
 
     const result = await pool.query(
       `
-        INSERT INTO admins (name, mobile, email, password_hash, password_salt)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING id, name, mobile, email, created_at
+        INSERT INTO admins (name, mobile, email, account_type, status, faculty, password_hash, password_salt)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id, name, mobile, email, account_type, status, faculty, created_at
       `,
-      [name.trim(), mobile.trim(), email.toLowerCase().trim(), hash, salt]
+      [
+        name.trim(),
+        mobile.trim(),
+        email.toLowerCase().trim(),
+        faculty ? "teacher" : "admin",
+        faculty ? "pending" : "approved",
+        faculty || null,
+        hash,
+        salt,
+      ]
     );
 
     return res.status(201).json({ role: "admin", ...result.rows[0] });
@@ -284,7 +315,7 @@ router.post("/auth/signin", async (req, res) => {
           WHERE email = $1 OR mobile = $1
         `
         : `
-          SELECT id, name, mobile, email, NULL AS course, NULL AS status, password_hash, password_salt
+          SELECT id, name, mobile, email, faculty AS course, status, account_type, password_hash, password_salt
           FROM admins
           WHERE email = $1 OR mobile = $1
         `,
@@ -317,6 +348,9 @@ router.post("/auth/signin", async (req, res) => {
     if (role === "student" && user.status !== "approved") {
       return res.status(403).json({ error: "account pending approval" });
     }
+    if (role === "admin" && user.account_type === "teacher" && user.status !== "approved") {
+      return res.status(403).json({ error: "account pending approval" });
+    }
     const valid = verifyPassword(password, user.password_salt, user.password_hash);
     if (!valid) {
       return res.status(401).json({ error: "Invalid Credital" });
@@ -339,7 +373,9 @@ router.post("/auth/signin", async (req, res) => {
       email: user.email,
       role,
       course: role === "student" ? user.course : null,
-      status: role === "student" ? user.status : null,
+      faculty: role === "admin" ? user.course || null : null,
+      status: role === "student" ? user.status : user.status || null,
+      accountType: role === "admin" ? user.account_type || "admin" : role,
       avatar: role === "student" ? user.avatar_url : null,
       token,
     });
@@ -483,7 +519,31 @@ router.post("/admin/notes", requireAdmin, upload.single("file"), async (req, res
   }
 
   try {
+    await ensureAdminsTable();
     await ensureNotesTable();
+
+    const adminResult = await pool.query(
+      `
+        SELECT account_type, faculty
+        FROM admins
+        WHERE id = $1
+      `,
+      [req.user.id]
+    );
+
+    if (!adminResult.rowCount) {
+      return res.status(404).json({ error: "admin user not found" });
+    }
+
+    const adminUser = adminResult.rows[0];
+    if (adminUser.account_type === "teacher") {
+      const teacherFaculty = String(adminUser.faculty || "").trim().toLowerCase();
+      const selectedSubject = String(subject || "").trim().toLowerCase();
+      if (!teacherFaculty || teacherFaculty !== selectedSubject) {
+        return res.status(403).json({ error: `Teachers can upload only ${adminUser.faculty || "their assigned"} subject notes.` });
+      }
+    }
+
     const result = await pool.query(
       `
         INSERT INTO notes (course, subject, chapter, file_name, file_path)
@@ -630,6 +690,34 @@ router.patch("/admin/students/approve-all", requireAdmin, async (_req, res) => {
   }
 });
 
+router.patch("/admin/admins/:id/approve", requireAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: "invalid admin id" });
+  }
+
+  try {
+    await ensureAdminsTable();
+    const result = await pool.query(
+      `
+        UPDATE admins
+        SET status = 'approved'
+        WHERE id = $1 AND account_type = 'teacher'
+        RETURNING id, name, mobile, email, faculty, account_type, status, created_at
+      `,
+      [id]
+    );
+
+    if (!result.rowCount) {
+      return res.status(404).json({ error: "teacher not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.delete("/admin/students/:id", requireAdmin, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) {
@@ -695,7 +783,7 @@ router.get("/admin/users", requireAdmin, async (req, res) => {
 
     const admins = await pool.query(
       `
-        SELECT id, name, mobile, email, created_at
+        SELECT id, name, mobile, email, faculty, account_type, status, created_at
         FROM admins
         ORDER BY id DESC
       `
@@ -703,7 +791,12 @@ router.get("/admin/users", requireAdmin, async (req, res) => {
 
     const users = [
       ...students.rows.map((row) => ({ ...row, role: "student" })),
-      ...admins.rows.map((row) => ({ ...row, role: "admin", course: null, status: null })),
+      ...admins.rows.map((row) => ({
+        ...row,
+        role: row.account_type === "teacher" ? "teacher" : "admin",
+        course: row.faculty || null,
+        status: row.status || null,
+      })),
     ];
 
     users.sort((a, b) => {

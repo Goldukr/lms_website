@@ -4,6 +4,7 @@ import Sgnup from "./sgnup";
 import ForgotPassword from "./forgotpassword";
 import Home from "./home";
 import HomeLogin from "./adminhomelogin";
+import TeacherHomeLogin from "./teacherhomelogin";
 import Course from "./course";
 import Neet11 from "./11neet";
 import Neet12 from "./12neet";
@@ -13,6 +14,8 @@ import JeeAdvance12 from "./12jeeadvance";
 import JeeDropper from "./jeedropper";
 import AdminPanel from "./admin";
 import AdminCourse from "./admincourse";
+import TeacherPanel from "./teacher";
+import TeacherCourse from "./teachercourse";
 import StudentHome from "./studenthome";
 import Profile from "./profile";
 import Physics from "./physics";
@@ -26,16 +29,22 @@ import Class7 from "./class7";
 import Class8 from "./class8";
 import Class9 from "./class9";
 import Class10 from "./class10";
+import { apiUrl } from "./api";
 
 function App() {
   const [page, setPage] = useState("home");
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+  const [showAdminSignupModal, setShowAdminSignupModal] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [forgotPasswordRole, setForgotPasswordRole] = useState("student");
+  const [adminSignupDisabled, setAdminSignupDisabled] = useState(false);
   const [loginPrefill, setLoginPrefill] = useState({
     role: "student",
     identifier: "",
   });
+  const [signupPrefillRole, setSignupPrefillRole] = useState("student");
   const [homeCourseTarget, setHomeCourseTarget] = useState("");
   const [courseBackTarget, setCourseBackTarget] = useState("course");
   const [auth, setAuth] = useState(() => {
@@ -56,6 +65,11 @@ function App() {
   }, [page]);
 
   useEffect(() => {
+    if (!auth) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [auth]);
+
+  useEffect(() => {
     if (page === "signin" || page === "signup" || page === "forgot") {
       setPage("home");
     }
@@ -68,6 +82,40 @@ function App() {
       identifier: "",
     });
   }, [showLoginModal]);
+
+  useEffect(() => {
+    if (showSignupModal) return;
+    setSignupPrefillRole("student");
+  }, [showSignupModal]);
+
+  function openAdminAuthModal() {
+    setShowForgotPasswordModal(false);
+    setShowLoginModal(false);
+    setShowSignupModal(false);
+    setShowAdminSignupModal(false);
+    setShowAdminLoginModal(true);
+  }
+
+  async function loadAdminSignupStatus() {
+    try {
+      const response = await fetch(apiUrl("/api/auth/admin-signup-status"));
+      const data = await response.json();
+      setAdminSignupDisabled(Boolean(data?.adminExists));
+    } catch (_error) {
+      setAdminSignupDisabled(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!showAdminLoginModal && !showAdminSignupModal) return;
+    loadAdminSignupStatus();
+  }, [showAdminLoginModal, showAdminSignupModal]);
+
+  useEffect(() => {
+    if (!showAdminSignupModal || !adminSignupDisabled) return;
+    setShowAdminSignupModal(false);
+    setShowAdminLoginModal(true);
+  }, [adminSignupDisabled, showAdminSignupModal]);
 
   function getCoursePage(course) {
     const normalized = String(course || "")
@@ -193,15 +241,58 @@ function App() {
         initialIdentifier={loginPrefill.identifier}
         onCreateAccount={() => {
           setShowLoginModal(false);
+          setSignupPrefillRole(loginPrefill.role || "student");
           setShowSignupModal(true);
         }}
         onForgotPassword={() => {
           setShowLoginModal(false);
+          setForgotPasswordRole("student");
           setShowForgotPasswordModal(true);
         }}
         onSignIn={(data) => {
-          setAuth(data);
+          setAuth({
+            ...data,
+            portal: data?.role === "admin" ? "teacher" : data?.portal,
+          });
           setShowLoginModal(false);
+          if (data?.role === "student") {
+            setPage(getCoursePage(data?.course));
+          } else {
+            setPage("home");
+          }
+        }}
+      />
+    );
+  }
+
+  function renderAdminLoginModal() {
+    if (!showAdminLoginModal) return null;
+    return (
+      <Signin
+        variant="modal"
+        onClose={() => setShowAdminLoginModal(false)}
+        initialRole="admin"
+        initialIdentifier=""
+        adminLabel="Admin"
+        lockRole
+        disableCreateAccount={adminSignupDisabled}
+        createAccountDisabledMessage="Admin signup is disabled because an admin account already exists."
+        onCreateAccount={() => {
+          if (adminSignupDisabled) return;
+          setShowAdminLoginModal(false);
+          setShowAdminSignupModal(true);
+        }}
+        onForgotPassword={() => {
+          setShowAdminLoginModal(false);
+          setForgotPasswordRole("admin");
+          setShowForgotPasswordModal(true);
+        }}
+        onSignIn={(data) => {
+          setAuth({
+            ...data,
+            portal: "admin",
+          });
+          setShowAdminLoginModal(false);
           if (data?.role === "student") {
             setPage(getCoursePage(data?.course));
           } else {
@@ -220,7 +311,11 @@ function App() {
         onClose={() => setShowForgotPasswordModal(false)}
         onBackToSignin={() => {
           setShowForgotPasswordModal(false);
-          setShowLoginModal(true);
+          if (forgotPasswordRole === "admin") {
+            setShowAdminLoginModal(true);
+          } else {
+            setShowLoginModal(true);
+          }
         }}
       />
     );
@@ -265,7 +360,7 @@ function App() {
   }
 
   useEffect(() => {
-    if (auth?.role !== "admin" && page === "admin") {
+    if (auth?.role !== "admin" && (page === "teacher" || page === "teachercourse" || page === "admin" || page === "admincourse")) {
       setPage("home");
     }
   }, [auth, page]);
@@ -276,7 +371,7 @@ function App() {
     if (!auth || auth.role !== "student") return;
     const allowed = getStudentAllowedPages(auth.course);
 
-    if (page === "course" || page === "admincourse" || isStudentCoursePage(page)) {
+    if (page === "course" || page === "teachercourse" || isStudentCoursePage(page)) {
       if (!allowed.has(page)) {
         setPage(getCoursePage(auth.course));
       }
@@ -324,10 +419,28 @@ function App() {
         }}
         onGoProfile={() => setPage("profile")}
         onLoginClick={() => setShowLoginModal(true)}
+        onAdminAccess={openAdminAuthModal}
       />
       {renderLoginModal()}
       {renderForgotPasswordModal()}
     </>
+    );
+  }
+
+  if (page === "teachercourse") {
+    return (
+      <TeacherCourse
+        onBackHome={() => setPage("home")}
+        onBackCourses={() => setPage("teachercourse")}
+        onGoTeacher={() => setPage("teacher")}
+        onLogout={() => {
+          setAuth(null);
+          setPage("home");
+        }}
+        userName={auth?.name}
+        token={auth?.token}
+        faculty={auth?.faculty}
+      />
     );
   }
 
@@ -463,6 +576,19 @@ function App() {
         {renderLoginModal()}
         {renderForgotPasswordModal()}
       </>
+    );
+  }
+
+  if (page === "teacher") {
+    return (
+      <TeacherPanel
+        token={auth?.token}
+        onBackHome={() => setPage("home")}
+        onLogout={() => {
+          setAuth(null);
+          setPage("home");
+        }}
+      />
     );
   }
 
@@ -820,19 +946,35 @@ function App() {
       <>
         {auth ? (
           auth?.role === "admin" ? (
-            <HomeLogin
-              userName={auth?.name}
-              token={auth?.token}
-              isAdmin
-              onExploreCourses={() => setPage("admincourse")}
-              onBrandClick={() => setPage("home")}
-              onLogout={() => {
-                setAuth(null);
-                setShowLoginModal(false);
-              }}
-              onGoAdmin={() => setPage("admin")}
-              onGoCourses={() => setPage("admincourse")}
-            />
+            auth?.portal === "admin" ? (
+              <HomeLogin
+                userName={auth?.name}
+                token={auth?.token}
+                isAdmin
+                onExploreCourses={() => setPage("admincourse")}
+                onBrandClick={() => setPage("home")}
+                onLogout={() => {
+                  setAuth(null);
+                  setShowLoginModal(false);
+                }}
+                onGoAdmin={() => setPage("admin")}
+                onGoCourses={() => setPage("admincourse")}
+              />
+            ) : (
+              <TeacherHomeLogin
+                userName={auth?.name}
+                token={auth?.token}
+                isTeacher
+                onExploreCourses={() => setPage("teachercourse")}
+                onBrandClick={() => setPage("home")}
+                onLogout={() => {
+                  setAuth(null);
+                  setShowLoginModal(false);
+                }}
+                onGoTeacher={() => setPage("teacher")}
+                onGoCourses={() => setPage("teachercourse")}
+              />
+            )
           ) : (
             <StudentHome
               userName={auth?.name}
@@ -859,6 +1001,7 @@ function App() {
           <>
             <Home
               onLoginClick={() => setShowLoginModal(true)}
+              onAdminAccess={openAdminAuthModal}
               onExploreCourses={(target) => {
                 const intended = getCoursePage(target);
                 if (intended === "home") {
@@ -870,37 +1013,15 @@ function App() {
               }}
               onBrandClick={() => setPage("home")}
             />
-            {showLoginModal && (
-              <Signin
-                variant="modal"
-                onClose={() => setShowLoginModal(false)}
-                initialRole={loginPrefill.role}
-                initialIdentifier={loginPrefill.identifier}
-                onCreateAccount={() => {
-                  setShowLoginModal(false);
-                  setShowSignupModal(true);
-                }}
-                onForgotPassword={() => {
-                  setShowLoginModal(false);
-                  setShowForgotPasswordModal(true);
-                }}
-                onSignIn={(data) => {
-                  setAuth(data);
-                  setShowLoginModal(false);
-                  if (data?.role === "student") {
-                    setPage(getCoursePage(data?.course));
-                  } else {
-                    setPage("home");
-                  }
-                }}
-              />
-            )}
+            {renderLoginModal()}
+            {renderAdminLoginModal()}
             {renderForgotPasswordModal()}
           </>
         )}
         {showSignupModal && (
           <Sgnup
             variant="modal"
+            initialRole={signupPrefillRole}
             onClose={() => setShowSignupModal(false)}
             onBackToSignin={(prefill) => {
               setShowSignupModal(false);
@@ -909,6 +1030,22 @@ function App() {
                 identifier: prefill?.identifier || "",
               });
               setShowLoginModal(true);
+            }}
+          />
+        )}
+        {showAdminSignupModal && (
+          <Sgnup
+            variant="modal"
+            initialRole="admin"
+            adminLabel="Admin"
+            lockRole
+            showFaculty={false}
+            disableAdminSignup={adminSignupDisabled}
+            adminSignupDisabledMessage="Admin signup is disabled because an admin account already exists."
+            onClose={() => setShowAdminSignupModal(false)}
+            onBackToSignin={() => {
+              setShowAdminSignupModal(false);
+              setShowAdminLoginModal(true);
             }}
           />
         )}

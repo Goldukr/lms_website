@@ -41,9 +41,9 @@ const FOOTER_GROUPS = [
   },
 ];
 
-const FOOTER_LINKS = ["About", "Discover AMIITJEE", "Legal & Accessibility"];
+const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Admin", "Legal & Accessibility"];
 
-function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdmin, isAdmin, onGoCourses, token }) {
+function TeacherHomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoTeacher, isTeacher, onGoCourses, token }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const [queries, setQueries] = useState([]);
@@ -126,12 +126,11 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
     };
   }, [navOpen]);
 
-
   async function refreshQueries(options = {}) {
     const { silent = false } = options;
     if (!token) {
       if (!silent) {
-        setQueryError("Missing admin session. Please sign in again.");
+        setQueryError("Missing teacher session. Please sign in again.");
       }
       setQueries(getLocalQueries());
       return;
@@ -236,13 +235,13 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
           </button>
           <div className="home-user" ref={menuRef}>
             <button type="button" className="home-user-btn" onClick={() => setMenuOpen((prev) => !prev)}>
-              {userName || "User"}
+              {userName || "Teacher"}
             </button>
             {menuOpen && (
               <div className="home-user-menu">
-                {isAdmin && (
-                  <button type="button" onClick={onGoAdmin}>
-                    Admin Panel
+                {isTeacher && (
+                  <button type="button" onClick={onGoTeacher}>
+                    Teacher Panel
                   </button>
                 )}
                 <button type="button" onClick={onBrandClick}>
@@ -355,7 +354,7 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
       <section className="home-about-us">
         <div className="home-about-shell">
           <h3 style={{ color: "#1e40af", fontSize: "1.6rem", margin: "0 0 16px", display: "flex", alignItems: "center", gap: "12px", fontWeight: "800" }}>
-            <span role="img" aria-label="Rocket" style={{ fontSize: "1.8rem" }}>🚀</span> Discover AMITJEE
+            <span role="img" aria-label="Rocket" style={{ fontSize: "1.8rem" }}>🚀</span> Discover AMIITJEE
           </h3>
           <h4 style={{ color: "#0f172a", fontSize: "1.3rem", fontWeight: "700", margin: "0 0 24px", lineHeight: "1.4" }}>
             Step into a World of Smart Learning and Real Results
@@ -369,105 +368,6 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
           <p style={{ margin: 0, fontSize: "1.05rem", lineHeight: "1.7", color: "#334155" }}>
             Our approach focuses on building a strong academic foundation, sharpening analytical thinking, and developing the confidence to solve even the most challenging problems. With structured study plans, regular assessments, and personalized guidance, students are always on the right path toward improvement.
           </p>
-        </div>
-      </section>
-
-      <section className="home-about-us">
-        <div className="home-about-shell">
-          <h3 style={{ color: "#1e40af", fontSize: "1.6rem", margin: "0 0 16px", display: "flex", alignItems: "center", gap: "12px", fontWeight: "800" }}>
-            <span role="img" aria-label="Teacher" style={{ fontSize: "1.8rem" }}>👨‍🏫</span> About Us
-          </h3>
-          <h4 style={{ color: "#0f172a", fontSize: "1.3rem", fontWeight: "700", margin: "0 0 24px", lineHeight: "1.4" }}>
-            Shaping Futures. Building Success Stories.
-          </h4>
-          <p style={{ margin: "0 0 16px", fontSize: "1.05rem", lineHeight: "1.7", color: "#334155" }}>
-            At AMITJEE Career Institute, we are committed to transforming students' dreams into reality by providing quality education, expert guidance, and a result-oriented approach. Our mission is to help aspiring students crack competitive exams like JEE Advanced, NEET-UG, and other academic challenges with confidence and excellence.
-          </p>
-          <p style={{ margin: "0 0 32px", fontSize: "1.05rem", lineHeight: "1.7", color: "#334155" }}>
-            We believe that success is not just about hard work. It is about learning smart, staying consistent, and having the right mentorship. That is why our teaching methodology focuses on concept clarity, practical understanding, and continuous improvement, ensuring that every student reaches their full potential.
-          </p>
-
-          <div className="home-about-grid">
-            <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
-              <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 12px", display: "flex", alignItems: "center", gap: "10px" }}>
-                <span role="img" aria-label="Target">🎯</span> Our Vision
-              </h5>
-              <p style={{ margin: 0, fontSize: "1rem", lineHeight: "1.7", color: "#475569" }}>
-                To become a leading institute that empowers students with knowledge, skills, and confidence to excel in competitive exams and achieve their career goals.
-              </p>
-            </div>
-
-            <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
-              <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 16px", display: "flex", alignItems: "center", gap: "10px" }}>
-                <span role="img" aria-label="Rocket">🚀</span> Our Mission
-              </h5>
-              <ul style={{ margin: 0, paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "10px", fontSize: "1rem", lineHeight: "1.6", color: "#475569" }}>
-                <li>To provide high-quality, concept-based education</li>
-                <li>To create a supportive and motivating learning environment</li>
-                <li>To help students develop analytical thinking and problem-solving skills</li>
-                <li>To guide every student with personal attention and mentorship</li>
-              </ul>
-            </div>
-          </div>
-
-          <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "32px", marginBottom: "32px", boxShadow: "0 4px 12px rgba(15, 23, 42, 0.05)" }}>
-            <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 20px", display: "flex", alignItems: "center", gap: "10px" }}>
-              <span role="img" aria-label="Lightbulb">💡</span> What Makes Us Different
-            </h5>
-            <ul className="home-about-diff-grid">
-              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
-                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span>
-                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Experienced Faculty</strong> Learn from experts with strong academic backgrounds</span>
-              </li>
-              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
-                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span>
-                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Structured Learning</strong> Well-planned syllabus and study material</span>
-              </li>
-              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
-                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span>
-                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Regular Tests & Analysis</strong> Track performance and improve continuously</span>
-              </li>
-              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
-                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span>
-                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Doubt Support</strong> Quick and effective doubt-solving sessions</span>
-              </li>
-              <li style={{ display: "flex", gap: "16px", alignItems: "flex-start", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255,255,255,1)" }}>
-                <span role="img" aria-label="Sparkles" style={{ fontSize: "1.4rem" }}>✨</span>
-                <span><strong style={{ color: "#0f172a", display: "block", marginBottom: "6px", fontSize: "1.05rem" }}>Student-Centric Approach</strong> Focused on individual growth and success</span>
-              </li>
-            </ul>
-          </div>
-
-          <div style={{ background: "rgba(255, 255, 255, 0.6)", border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: "16px", padding: "28px", display: "flex", flexDirection: "column" }}>
-            <h5 style={{ color: "#1e293b", fontSize: "1.2rem", margin: "0 0 12px", display: "flex", alignItems: "center", gap: "10px" }}>
-              <span role="img" aria-label="Trophy">🏆</span> Our Commitment
-            </h5>
-            <p style={{ margin: 0, fontSize: "1rem", lineHeight: "1.7", color: "#475569" }}>
-              We are not just an institute. We are a partner in your journey. From building strong fundamentals to achieving top ranks, we stand with our students at every step, guiding them towards success.
-            </p>
-          </div>
-
-          <div style={{
-            background: "linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%)",
-            padding: "24px 32px",
-            borderRadius: "14px",
-            marginTop: "32px",
-            borderLeft: "4px solid #1e40af",
-            boxShadow: "0 8px 32px rgba(15, 23, 42, 0.05)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px"
-          }}>
-            <h5 style={{ color: "#1e40af", fontSize: "1.2rem", margin: 0, display: "flex", alignItems: "center", gap: "10px", textTransform: "uppercase", letterSpacing: "0.03em", fontWeight: "800" }}>
-              <span role="img" aria-label="Graduation Cap">🎓</span> Your Dream. Our Responsibility.
-            </h5>
-            <p style={{ margin: "0 0 4px", color: "#334155", fontSize: "1.1rem" }}>
-              At AMITJEE, your success is our priority.
-            </p>
-            <p style={{ margin: "4px 0 0", fontWeight: "800", color: "#0f172a", fontSize: "1.15rem", display: "flex", alignItems: "center", gap: "8px" }}>
-              <span role="img" aria-label="Point">👉</span> Join us and take the first step towards a brighter future.
-            </p>
-          </div>
         </div>
       </section>
 
@@ -555,4 +455,4 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
   );
 }
 
-export default HomeLogin;
+export default TeacherHomeLogin;

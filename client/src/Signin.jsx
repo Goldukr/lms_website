@@ -1,8 +1,20 @@
 import { useEffect, useState } from "react";
 import "./sign.css";
-import { apiUrl, parseJsonResponse } from "./api";
+import { API_BASE, apiUrl, parseJsonResponse } from "./api";
 
-function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant, initialRole = "student", initialIdentifier = "" }) {
+function Signin({
+  onCreateAccount,
+  onForgotPassword,
+  onSignIn,
+  onClose,
+  variant,
+  initialRole = "student",
+  initialIdentifier = "",
+  adminLabel = "Teacher",
+  lockRole = false,
+  disableCreateAccount = false,
+  createAccountDisabledMessage = "",
+}) {
   const [role, setRole] = useState(initialRole);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -61,7 +73,8 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant,
       }
       onSignIn?.(data);
     } catch (error) {
-      setSubmitError(error?.message || "Sign in failed. Check backend connection.");
+      const target = API_BASE || "your local backend (/api via Vite proxy)";
+      setSubmitError(error?.message || `Sign in failed. Could not reach ${target}. Make sure the backend is running.`);
     } finally {
       setIsSubmitting(false);
     }
@@ -69,6 +82,10 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant,
 
   const isStudent = role === "student";
   const isModal = variant === "modal";
+  const adminPanelLabel = `${adminLabel} Panel`;
+  const adminSignInLabel = `${adminLabel} Sign In`;
+  const adminSignInButtonLabel = `Sign In as ${adminLabel}`;
+  const adminAccessLabel = `${adminLabel} access only.`;
 
   return (
     <div
@@ -92,28 +109,30 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant,
             </button>
           )}
 
-          <div className="signin-tabs" role="tablist" aria-label="Select panel">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={isStudent}
-              className={`signin-tab ${isStudent ? "active" : ""}`}
-              onClick={() => onRoleChange("student")}
-            >
-              Student Panel
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={!isStudent}
-              className={`signin-tab ${!isStudent ? "active" : ""}`}
-              onClick={() => onRoleChange("admin")}
-            >
-              Admin Panel
-            </button>
-          </div>
+          {!lockRole && (
+            <div className="signin-tabs" role="tablist" aria-label="Select panel">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={isStudent}
+                className={`signin-tab ${isStudent ? "active" : ""}`}
+                onClick={() => onRoleChange("student")}
+              >
+                Student Panel
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={!isStudent}
+                className={`signin-tab ${!isStudent ? "active" : ""}`}
+                onClick={() => onRoleChange("admin")}
+              >
+                {adminPanelLabel}
+              </button>
+            </div>
+          )}
 
-          <h1>{isStudent ? "Student Sign In" : "Admin Sign In"}</h1>
+          <h1>{isStudent ? "Student Sign In" : adminSignInLabel}</h1>
           <p className="signin-subtitle">Login with email or mobile and password.</p>
 
           <form className="signin-form" onSubmit={onSubmit}>
@@ -157,18 +176,27 @@ function Signin({ onCreateAccount, onForgotPassword, onSignIn, onClose, variant,
             {submitError && <p className="form-error">{submitError}</p>}
 
             <button type="submit" className="primary-btn" disabled={isSubmitting}>
-              {isStudent ? "Sign In as Student" : "Sign In as Admin"}
+              {isStudent ? "Sign In as Student" : adminSignInButtonLabel}
             </button>
           </form>
 
           <div className="signin-signup">
             <span>Don't have account </span>
-            <button type="button" className="signup-link" onClick={onCreateAccount}>
+            <button
+              type="button"
+              className="signup-link"
+              onClick={onCreateAccount}
+              disabled={disableCreateAccount}
+              title={disableCreateAccount ? createAccountDisabledMessage : ""}
+            >
               Signup
             </button>
           </div>
+          {disableCreateAccount && createAccountDisabledMessage && (
+            <p className="signin-note">{createAccountDisabledMessage}</p>
+          )}
 
-          <p className="signin-note">{isStudent ? "Student access only." : "Admin access only."}</p>
+          <p className="signin-note">{isStudent ? "Student access only." : adminAccessLabel}</p>
         </main>
       </div>
     </div>

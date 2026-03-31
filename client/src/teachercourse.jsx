@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./course.css";
 
-const NAV_ITEMS = ["Home", "Admin", "Test Series", "About Us"];
+const NAV_ITEMS = ["Home", "Teacher", "Test Series", "About Us"];
 const COURSE_OPTIONS = ["11 NEET", "11 JEE-Advance", "12 NEET", "12 JEE-Advance", "NEET Dropper", "JEE Dropper", "Class 7", "Class 8", "Class 9", "Class 10"];
 const SUBJECT_OPTIONS = ["Physics", "Chemistry", "Mathematics", "Biology", "English", "Social Science"];
 const FOUNDATION_SUBJECT_OPTIONS = ["Physics", "Chemistry", "Mathematics", "Biology"];
@@ -25,10 +25,22 @@ const FOOTER_GROUPS = [
   },
 ];
 
-const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Schools", "Legal & Accessibility"];
+const FOOTER_LINKS = ["About", "Discover AMIITJEE", "For Admin", "Legal & Accessibility"];
 const API_BASE = import.meta.env.VITE_API_URL || "";
+const COURSE_SUBJECT_MAP = {
+  "11 NEET": ["Physics", "Chemistry", "Biology"],
+  "12 NEET": ["Physics", "Chemistry", "Biology"],
+  "NEET Dropper": ["Physics", "Chemistry", "Biology"],
+  "11 JEE-Advance": ["Physics", "Chemistry", "Mathematics"],
+  "12 JEE-Advance": ["Physics", "Chemistry", "Mathematics"],
+  "JEE Dropper": ["Physics", "Chemistry", "Mathematics"],
+  "Class 7": FOUNDATION_SUBJECT_OPTIONS,
+  "Class 8": FOUNDATION_SUBJECT_OPTIONS,
+  "Class 9": FOUNDATION_SUBJECT_OPTIONS,
+  "Class 10": FOUNDATION_SUBJECT_OPTIONS,
+};
 
-function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onGoAdmin }) {
+function TeacherCourse({ onBackHome, onBackCourses, onLogout, userName, token, onGoTeacher, faculty = "" }) {
   const [form, setForm] = useState({
     chapter: "",
     course: "",
@@ -67,26 +79,50 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
     loadUploads();
   }, []);
 
+  const normalizedFaculty = String(faculty || "").trim();
+
+  const teacherCourseOptions = useMemo(() => {
+    if (!normalizedFaculty) return COURSE_OPTIONS;
+    return COURSE_OPTIONS.filter((course) => (COURSE_SUBJECT_MAP[course] || SUBJECT_OPTIONS).includes(normalizedFaculty));
+  }, [normalizedFaculty]);
+
   const subjectOptions = useMemo(() => {
-    if (!form.course) return SUBJECT_OPTIONS;
-    if (form.course.includes("NEET")) {
-      return ["Physics", "Chemistry", "Biology"];
+    if (!form.course) {
+      return normalizedFaculty ? [normalizedFaculty] : SUBJECT_OPTIONS;
     }
-    if (form.course.includes("JEE")) {
-      return ["Physics", "Chemistry", "Mathematics"];
-    }
-    if (["Class 7", "Class 8", "Class 9", "Class 10"].includes(form.course)) {
-      return FOUNDATION_SUBJECT_OPTIONS;
-    }
-    return SUBJECT_OPTIONS;
-  }, [form.course]);
+    const availableSubjects = COURSE_SUBJECT_MAP[form.course] || SUBJECT_OPTIONS;
+    if (!normalizedFaculty) return availableSubjects;
+    return availableSubjects.includes(normalizedFaculty) ? [normalizedFaculty] : [];
+  }, [form.course, normalizedFaculty]);
+
+  useEffect(() => {
+    setForm((prev) => {
+      const nextCourse = teacherCourseOptions.includes(prev.course) ? prev.course : "";
+      const nextSubjects = nextCourse ? (COURSE_SUBJECT_MAP[nextCourse] || SUBJECT_OPTIONS) : [];
+      const nextSubject = normalizedFaculty && nextSubjects.includes(normalizedFaculty)
+        ? normalizedFaculty
+        : nextSubjects.includes(prev.subject)
+          ? prev.subject
+          : "";
+
+      if (nextCourse === prev.course && nextSubject === prev.subject) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        course: nextCourse,
+        subject: nextSubject,
+      };
+    });
+  }, [normalizedFaculty, teacherCourseOptions]);
 
   function onChange(event) {
     const { name, value } = event.target;
     setForm((prev) => ({
       ...prev,
       [name]: value,
-      ...(name === "course" ? { subject: "" } : null),
+      ...(name === "course" ? { subject: normalizedFaculty || "" } : null),
     }));
   }
 
@@ -99,7 +135,7 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
     event.preventDefault();
     if (!form.chapter.trim() || !form.course || !form.subject || !form.file) return;
     if (!token) {
-      setStatus("Missing admin token.");
+      setStatus("Missing teacher token.");
       return;
     }
     setStatus("");
@@ -122,7 +158,8 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
           setStatus(data?.error || "Upload failed.");
           return;
         }
-        setForm({ chapter: "", course: "", subject: "", file: null });
+        setForm({ chapter: "", course: "", subject: normalizedFaculty || "", file: null });
+        setStatus("Upload successful.");
         loadUploads();
       })
       .catch(() => setStatus("Upload failed."));
@@ -130,7 +167,7 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
 
   function onDelete(id) {
     if (!token) {
-      setStatus("Missing admin token.");
+      setStatus("Missing teacher token.");
       return;
     }
     fetch(`${API_BASE}/api/admin/notes/${id}`, {
@@ -148,7 +185,7 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
 
   function onDeleteAll() {
     if (!token) {
-      setStatus("Missing admin token.");
+      setStatus("Missing teacher token.");
       return;
     }
     fetch(`${API_BASE}/api/admin/notes`, {
@@ -179,7 +216,7 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
               key={item}
               type="button"
               className="course-nav-item"
-              onClick={item === "Admin" ? onBackCourses : onBackHome}
+              onClick={item === "Teacher" ? onBackCourses : onBackHome}
             >
               {item}
             </button>
@@ -189,15 +226,15 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
         <div className="course-actions">
           <div className="course-user" ref={menuRef}>
             <button type="button" className="course-user-btn" onClick={() => setMenuOpen((prev) => !prev)}>
-              {userName || "Admin"}
+              {userName || "Teacher"}
             </button>
             {menuOpen && (
               <div className="course-user-menu">
                 <button type="button" onClick={onBackHome}>
                   Home
                 </button>
-                <button type="button" onClick={onGoAdmin}>
-                  Admin
+                <button type="button" onClick={onGoTeacher}>
+                  Teacher
                 </button>
                 <button type="button" onClick={onLogout}>
                   Log Out
@@ -209,13 +246,13 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
       </header>
 
       <div className="course-shell">
-        <h1 className="course-title">Admin Course Upload</h1>
+        <h1 className="course-title">Teacher Course Upload</h1>
         <div className="admin-course-card">
           <p className="admin-course-subtitle">Upload notes and study material for students.</p>
           <form className="admin-course-form" onSubmit={onSubmit}>
-            <label htmlFor="admin-chapter">Chapter Name</label>
+            <label htmlFor="teacher-chapter">Chapter Name</label>
             <input
-              id="admin-chapter"
+              id="teacher-chapter"
               name="chapter"
               type="text"
               placeholder="Enter chapter name"
@@ -224,28 +261,38 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
               required
             />
 
-            <label htmlFor="admin-course">Course</label>
-            <select id="admin-course" name="course" value={form.course} onChange={onChange} required>
+            <label htmlFor="teacher-course">Course</label>
+            <select id="teacher-course" name="course" value={form.course} onChange={onChange} required>
               <option value="">Select Course</option>
-              {COURSE_OPTIONS.map((course) => (
+              {teacherCourseOptions.map((course) => (
                 <option key={course} value={course}>
                   {course}
                 </option>
               ))}
             </select>
 
-            <label htmlFor="admin-subject">Subject</label>
-            <select id="admin-subject" name="subject" value={form.subject} onChange={onChange} required>
-              <option value="">Select Subject</option>
+            <label htmlFor="teacher-subject">Subject</label>
+            <select
+              id="teacher-subject"
+              name="subject"
+              value={form.subject}
+              onChange={onChange}
+              disabled={Boolean(normalizedFaculty)}
+              required
+            >
+              <option value="">{normalizedFaculty ? "Assigned Subject" : "Select Subject"}</option>
               {subjectOptions.map((subject) => (
                 <option key={subject} value={subject}>
                   {subject}
                 </option>
               ))}
             </select>
+            {normalizedFaculty && (
+              <p className="admin-course-status">You can upload only {normalizedFaculty} notes.</p>
+            )}
 
-            <label htmlFor="admin-file">Upload File</label>
-            <input id="admin-file" type="file" onChange={onFileChange} required />
+            <label htmlFor="teacher-file">Upload File</label>
+            <input id="teacher-file" type="file" onChange={onFileChange} required />
 
             <button type="submit" className="primary-btn admin-course-submit">
               Upload
@@ -415,4 +462,4 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
   );
 }
 
-export default AdminCourse;
+export default TeacherCourse;

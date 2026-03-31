@@ -1422,7 +1422,8 @@ body,
   border-top: 1px solid rgba(148, 163, 184, 0.2);
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
   padding: clamp(32px, 6vw, 60px) clamp(18px, 5vw, 40px);
-  margin: clamp(32px, 6vw, 60px) 0;
+  margin: clamp(32px, 6vw, 60px) 0 0;
+  scroll-margin-top: 96px;
   width: 100%;
   box-sizing: border-box;
   box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);

@@ -72,6 +72,28 @@ function AdminPanel({ token, onLogout, onBackHome }) {
     }
   }
 
+  async function approveTeacher(id) {
+    setActionError("");
+    try {
+      const response = await fetch(apiUrl(`/api/admin/admins/${id}/approve`), {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response.status === 204 ? null : await parseJsonResponse(response);
+      if (!response.ok) {
+        setActionError(data?.error || "Failed to approve teacher.");
+        return;
+      }
+      setStudents((prev) =>
+        prev.map((item) => (item.role === "teacher" && item.id === id ? { ...item, status: "approved" } : item))
+      );
+    } catch (_error) {
+      setActionError("Failed to approve teacher.");
+    }
+  }
+
   async function approveAllStudents() {
     setActionError("");
     try {
@@ -122,8 +144,8 @@ function AdminPanel({ token, onLogout, onBackHome }) {
     }
   }
 
-  async function deleteAdmin(id) {
-    const confirmed = window.confirm("Are you sure you want to delete this admin?");
+  async function deleteAdmin(id, role = "admin") {
+    const confirmed = window.confirm(`Are you sure you want to delete this ${role}?`);
     if (!confirmed) {
       return;
     }
@@ -137,16 +159,16 @@ function AdminPanel({ token, onLogout, onBackHome }) {
       });
       if (!response.ok) {
         const data = await parseJsonResponse(response);
-        setActionError(data?.error || "Failed to delete admin.");
+        setActionError(data?.error || `Failed to delete ${role}.`);
         return;
       }
       if (id === getCurrentAdminId()) {
         onLogout();
         return;
       }
-      setStudents((prev) => prev.filter((item) => !(item.role === "admin" && item.id === id)));
+      setStudents((prev) => prev.filter((item) => item.id !== id));
     } catch (_error) {
-      setActionError("Failed to delete admin.");
+      setActionError(`Failed to delete ${role}.`);
     }
   }
 
@@ -212,10 +234,10 @@ function AdminPanel({ token, onLogout, onBackHome }) {
               </button>
               <button
                 type="button"
-                className={`admin-filter-btn ${roleFilter === "admin" ? "active" : ""}`}
-                onClick={() => setRoleFilter("admin")}
+                className={`admin-filter-btn ${roleFilter === "teacher" ? "active" : ""}`}
+                onClick={() => setRoleFilter("teacher")}
               >
-                Admins
+                Teachers
               </button>
             </div>
             <button type="button" className="secondary-btn" onClick={onBackHome}>
@@ -267,7 +289,7 @@ function AdminPanel({ token, onLogout, onBackHome }) {
               {students.filter((student) => roleFilter === "all" || student.role === roleFilter).length ===
               0 ? (
                 <p className="admin-status">
-                  No {roleFilter === "student" ? "students" : "admins"} found.
+                  No {roleFilter === "student" ? "students" : "teachers"} found.
                 </p>
               ) : (
                 <div className="admin-table">
@@ -290,7 +312,7 @@ function AdminPanel({ token, onLogout, onBackHome }) {
                         <span data-label="Mobile">{student.mobile}</span>
                         <span data-label="Email">{student.email}</span>
                         <span data-label="Course">{student.course || "-"}</span>
-                        <span data-label="Status">{student.role === "student" ? student.status || "pending" : "-"}</span>
+                        <span data-label="Status">{student.status || "-"}</span>
                         <span data-label="Created">{student.created_at ? new Date(student.created_at).toLocaleString() : "-"}</span>
                         <span className="admin-actions-cell">
                           {student.role === "student" && student.status !== "approved" && (
@@ -298,6 +320,15 @@ function AdminPanel({ token, onLogout, onBackHome }) {
                               type="button"
                               className="admin-mini-btn admin-approve"
                               onClick={() => approveStudent(student.id)}
+                            >
+                              Approve
+                            </button>
+                          )}
+                          {student.role === "teacher" && student.status !== "approved" && (
+                            <button
+                              type="button"
+                              className="admin-mini-btn admin-approve"
+                              onClick={() => approveTeacher(student.id)}
                             >
                               Approve
                             </button>
@@ -315,7 +346,16 @@ function AdminPanel({ token, onLogout, onBackHome }) {
                             <button
                               type="button"
                               className="admin-mini-btn admin-delete"
-                              onClick={() => deleteAdmin(student.id)}
+                              onClick={() => deleteAdmin(student.id, "admin")}
+                            >
+                              Delete
+                            </button>
+                          )}
+                          {student.role === "teacher" && (
+                            <button
+                              type="button"
+                              className="admin-mini-btn admin-delete"
+                              onClick={() => deleteAdmin(student.id, "teacher")}
                             >
                               Delete
                             </button>

@@ -1,12 +1,23 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./sign.css";
 import { apiUrl, parseJsonResponse } from "./api";
 
 const COURSE_OPTIONS = ["11 NEET", "11 JEE- Advance", "12 NEET", "12 JEE-Advance", "NEET Dropper", "JEE Dropper", "Class 7", "Class 8", "Class 9", "Class 10"];
+const FACULTY_OPTIONS = ["Physics", "Chemistry", "Mathematics", "Biology"];
 const STRONG_PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$/;
 
-function Sgnup({ onBackToSignin, onClose, variant }) {
-  const [role, setRole] = useState("student");
+function Sgnup({
+  onBackToSignin,
+  onClose,
+  variant,
+  initialRole = "student",
+  adminLabel = "Teacher",
+  lockRole = false,
+  showFaculty = true,
+  disableAdminSignup = false,
+  adminSignupDisabledMessage = "",
+}) {
+  const [role, setRole] = useState(initialRole);
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,6 +28,7 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
     mobile: "",
     email: "",
     course: "",
+    faculty: "",
     password: "",
     confirmPassword: "",
   });
@@ -38,6 +50,7 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
       mobile: "",
       email: "",
       course: "",
+      faculty: "",
       password: "",
       confirmPassword: "",
     });
@@ -55,6 +68,18 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
     if (!form.password) return false;
     return !STRONG_PASSWORD_REGEX.test(form.password);
   }, [form.password]);
+
+  useEffect(() => {
+    setRole(disableAdminSignup && initialRole === "admin" && !lockRole ? "student" : initialRole);
+  }, [disableAdminSignup, initialRole, lockRole]);
+
+  useEffect(() => {
+    if (disableAdminSignup && role === "admin" && !lockRole) {
+      setRole("student");
+      setSubmitError(adminSignupDisabledMessage || "Admin signup is disabled because an admin account already exists.");
+      setSubmitSuccess("");
+    }
+  }, [adminSignupDisabledMessage, disableAdminSignup, lockRole, role]);
 
   async function onSubmit(event) {
     event.preventDefault();
@@ -78,6 +103,7 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
           email: form.email,
           role,
           course: role === "student" ? form.course : "",
+          faculty: role === "admin" ? form.faculty : "",
           password: form.password,
         }),
       });
@@ -94,6 +120,7 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
         mobile: "",
         email: "",
         course: "",
+        faculty: "",
         password: "",
         confirmPassword: "",
       });
@@ -113,6 +140,10 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
 
   const isStudent = role === "student";
   const isModal = variant === "modal";
+  const adminPanelLabel = `${adminLabel} Panel`;
+  const adminSignUpLabel = `${adminLabel} Sign Up`;
+  const adminCreateAccountLabel = `Create ${adminLabel} Account`;
+  const adminSignupBlockedMessage = adminSignupDisabledMessage || "Admin signup is disabled because an admin account already exists.";
 
   return (
     <div
@@ -136,28 +167,32 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
             </button>
           )}
 
-          <div className="signin-tabs" role="tablist" aria-label="Select panel">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={isStudent}
-              className={`signin-tab ${isStudent ? "active" : ""}`}
-              onClick={() => onRoleChange("student")}
-            >
-              Student Panel
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={!isStudent}
-              className={`signin-tab ${!isStudent ? "active" : ""}`}
-              onClick={() => onRoleChange("admin")}
-            >
-              Admin Panel
-            </button>
-          </div>
+          {!lockRole && (
+            <div className="signin-tabs" role="tablist" aria-label="Select panel">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={isStudent}
+                className={`signin-tab ${isStudent ? "active" : ""}`}
+                onClick={() => onRoleChange("student")}
+              >
+                Student Panel
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={!isStudent}
+                className={`signin-tab ${!isStudent ? "active" : ""}`}
+                onClick={() => onRoleChange("admin")}
+                disabled={disableAdminSignup}
+                title={disableAdminSignup ? adminSignupBlockedMessage : ""}
+              >
+                {adminPanelLabel}
+              </button>
+            </div>
+          )}
 
-          <h1>{isStudent ? "Student Sign Up" : "Admin Sign Up"}</h1>
+          <h1>{isStudent ? "Student Sign Up" : adminSignUpLabel}</h1>
           <p className="signin-subtitle">Create account with email/mobile and password.</p>
 
           <form className="signin-form" onSubmit={onSubmit}>
@@ -199,6 +234,26 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
                   {COURSE_OPTIONS.map((course) => (
                     <option key={course} value={course}>
                       {course}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
+
+            {!isStudent && showFaculty && (
+              <>
+                <label htmlFor="signup-faculty">Faculty</label>
+                <select
+                  id="signup-faculty"
+                  name="faculty"
+                  value={form.faculty}
+                  onChange={onChange}
+                  required
+                >
+                  <option value="">Select Faculty</option>
+                  {FACULTY_OPTIONS.map((faculty) => (
+                    <option key={faculty} value={faculty}>
+                      {faculty}
                     </option>
                   ))}
                 </select>
@@ -267,6 +322,7 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
 
             {passwordMismatch && <p className="form-error">Password and Confirm Password must match.</p>}
             {submitError && <p className="form-error">{submitError}</p>}
+            {disableAdminSignup && !lockRole && <p className="signin-note">{adminSignupBlockedMessage}</p>}
             {submitSuccess && <p className="form-success">{submitSuccess}</p>}
 
             <button
@@ -274,7 +330,7 @@ function Sgnup({ onBackToSignin, onClose, variant }) {
               className="primary-btn"
               disabled={passwordMismatch || passwordInvalid || isSubmitting}
             >
-              {isStudent ? "Create Student Account" : "Create Admin Account"}
+              {isStudent ? "Create Student Account" : adminCreateAccountLabel}
             </button>
           </form>
 
