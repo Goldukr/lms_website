@@ -1388,15 +1388,25 @@ body,
 
 .admin-query-row {
   display: grid;
-  grid-template-columns: 1fr 1.2fr 0.9fr 2fr 1.3fr auto;
-  min-width: 780px;
-  gap: 10px;
-  align-items: center;
-  padding: 7px 9px;
+  grid-template-columns: 1fr 1.45fr 1fr 2.4fr 1.5fr auto;
+  min-width: 980px;
+  gap: 18px;
+  align-items: start;
+  padding: 10px 12px;
   border-radius: 10px;
   background: rgba(24, 34, 58, 0.65);
   color: #dbe7ff;
   font-size: 0.95rem;
+}
+
+.admin-query-row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.admin-query-row span:nth-child(4) {
+  white-space: normal;
 }
 
 .admin-query-header {
