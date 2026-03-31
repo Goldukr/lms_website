@@ -11,13 +11,7 @@ const uploadsDir = path.join(__dirname, "..", "uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (_req, file, cb) => {
-    const safeName = file.originalname.replace(/[^\w.\-]+/g, "_");
-    cb(null, `${Date.now()}-${safeName}`);
-  },
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 async function ensureTable() {
@@ -79,9 +73,13 @@ async function ensureNotesTable() {
       chapter TEXT NOT NULL,
       file_name TEXT NOT NULL,
       file_path TEXT NOT NULL,
+      mime_type TEXT,
+      file_data BYTEA,
       uploaded_at TIMESTAMP NOT NULL DEFAULT NOW()
     )
   `);
+  await pool.query(`ALTER TABLE notes ADD COLUMN IF NOT EXISTS mime_type TEXT`);
+  await pool.query(`ALTER TABLE notes ADD COLUMN IF NOT EXISTS file_data BYTEA`);
 }
 
 async function ensureQueriesTable() {
@@ -545,15 +543,29 @@ router.post("/admin/notes", requireAdmin, upload.single("file"), async (req, res
       }
     }
 
+    const safeName = req.file.originalname.replace(/[^\w.\-]+/g, "_");
+    const storedFileName = `${Date.now()}-${safeName}`;
+
     const result = await pool.query(
       `
-        INSERT INTO notes (course, subject, chapter, file_name, file_path)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING id, course, subject, chapter, file_name, file_path, uploaded_at
+        INSERT INTO notes (course, subject, chapter, file_name, file_path, mime_type, file_data)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id, course, subject, chapter, file_name, file_path, mime_type, uploaded_at
       `,
-      [course, subject, chapter, req.file.originalname, req.file.filename]
+      [
+        course,
+        subject,
+        chapter,
+        req.file.originalname,
+        storedFileName,
+        req.file.mimetype || "application/octet-stream",
+        req.file.buffer,
+      ]
     );
-    res.status(201).json(result.rows[0]);
+    res.status(201).json({
+      ...result.rows[0],
+      file_url: `/api/notes/${result.rows[0].id}/file`,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -576,7 +588,7 @@ router.get("/notes", async (req, res) => {
     const clause = where.length ? `WHERE ${where.join(" AND ")}` : "";
     const result = await pool.query(
       `
-        SELECT id, course, subject, chapter, file_name, file_path, uploaded_at
+        SELECT id, course, subject, chapter, file_name, file_path, mime_type, uploaded_at
         FROM notes
         ${clause}
         ORDER BY uploaded_at DESC
@@ -586,9 +598,48 @@ router.get("/notes", async (req, res) => {
     res.json(
       result.rows.map((row) => ({
         ...row,
-        file_url: `/uploads/${row.file_path}`,
+        file_url: `/api/notes/${row.id}/file`,
       }))
     );
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/notes/:id/file", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).send("invalid note id");
+  }
+
+  try {
+    await ensureNotesTable();
+    const result = await pool.query(
+      `
+        SELECT file_name, file_path, mime_type, file_data
+        FROM notes
+        WHERE id = $1
+      `,
+      [id]
+    );
+
+    if (!result.rowCount) {
+      return res.status(404).send("note file not found");
+    }
+
+    const note = result.rows[0];
+    if (note.file_data) {
+      res.setHeader("Content-Type", note.mime_type || "application/octet-stream");
+      res.setHeader("Content-Disposition", `inline; filename="${encodeURIComponent(note.file_name)}"`);
+      return res.send(note.file_data);
+    }
+
+    const filePath = path.join(uploadsDir, note.file_path);
+    if (fs.existsSync(filePath)) {
+      return res.sendFile(filePath);
+    }
+
+    return res.status(404).send("note file not found");
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
