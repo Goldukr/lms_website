@@ -76,7 +76,7 @@ function scrollToDiscoverSection() {
 
 function saveQueryToLocal(entry) {
   const existing = JSON.parse(localStorage.getItem("queries") || "[]");
-  localStorage.setItem("queries", JSON.stringify([entry, ...existing]));
+  localStorage.setItem("queries", JSON.stringify([{ ...entry, localOnly: true }, ...existing]));
 }
 
 function Home({ onLoginClick, onExploreCourses, onBrandClick, onAdminAccess }) {

@@ -57,6 +57,11 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
     return JSON.parse(localStorage.getItem("queries") || "[]");
   }
 
+  function isServerQueryId(id) {
+    const numericId = Number(id);
+    return Number.isInteger(numericId) && numericId > 0 && numericId <= 2147483647;
+  }
+
   function mergeQueries(serverQueries, localQueries) {
     const merged = [...serverQueries];
     const seen = new Set(serverQueries.map((item) => `${item.id}`));
@@ -166,6 +171,13 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
     if (!confirmed) return;
 
     setQueryActionError("");
+    const nextLocalQueries = getLocalQueries().filter((item) => `${item.id}` !== `${id}`);
+
+    if (!isServerQueryId(id)) {
+      setQueries((prev) => prev.filter((item) => `${item.id}` !== `${id}`));
+      localStorage.setItem("queries", JSON.stringify(nextLocalQueries));
+      return;
+    }
 
     try {
       const response = await fetch(apiUrl(`/api/admin/queries/${id}`), {
@@ -181,8 +193,7 @@ function HomeLogin({ onExploreCourses, onBrandClick, onLogout, userName, onGoAdm
         return;
       }
 
-      setQueries((prev) => prev.filter((item) => item.id !== id));
-      const nextLocalQueries = getLocalQueries().filter((item) => item.id !== id);
+      setQueries((prev) => prev.filter((item) => `${item.id}` !== `${id}`));
       localStorage.setItem("queries", JSON.stringify(nextLocalQueries));
     } catch (_error) {
       setQueryActionError("Failed to delete query.");
