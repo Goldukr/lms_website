@@ -133,6 +133,19 @@ function getPublicErrorMessage(error, fallback = "Something went wrong. Please t
   return fallback;
 }
 
+async function getAdminAccountById(id) {
+  await ensureAdminsTable();
+  const result = await pool.query(
+    `
+      SELECT id, account_type, faculty
+      FROM admins
+      WHERE id = $1
+    `,
+    [id]
+  );
+  return result.rows[0] || null;
+}
+
 function requireAdmin(req, res, next) {
   const authHeader = req.headers.authorization || "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
@@ -519,23 +532,11 @@ router.post("/admin/notes", requireAdmin, upload.single("file"), async (req, res
   }
 
   try {
-    await ensureAdminsTable();
     await ensureNotesTable();
-
-    const adminResult = await pool.query(
-      `
-        SELECT account_type, faculty
-        FROM admins
-        WHERE id = $1
-      `,
-      [req.user.id]
-    );
-
-    if (!adminResult.rowCount) {
+    const adminUser = await getAdminAccountById(req.user.id);
+    if (!adminUser) {
       return res.status(404).json({ error: "admin user not found" });
     }
-
-    const adminUser = adminResult.rows[0];
     if (adminUser.account_type === "teacher") {
       const teacherFaculty = String(adminUser.faculty || "").trim().toLowerCase();
       const selectedSubject = String(subject || "").trim().toLowerCase();
@@ -600,10 +601,23 @@ router.delete("/admin/notes/:id", requireAdmin, async (req, res) => {
   }
 
   try {
+    const adminUser = await getAdminAccountById(req.user.id);
+    if (!adminUser) {
+      return res.status(404).json({ error: "admin user not found" });
+    }
+
     await ensureNotesTable();
-    const existing = await pool.query("SELECT file_path FROM notes WHERE id = $1", [id]);
+    const existing = await pool.query("SELECT file_path, subject FROM notes WHERE id = $1", [id]);
     if (!existing.rowCount) {
       return res.status(404).json({ error: "note not found" });
+    }
+
+    if (adminUser.account_type === "teacher") {
+      const teacherFaculty = String(adminUser.faculty || "").trim().toLowerCase();
+      const noteSubject = String(existing.rows[0].subject || "").trim().toLowerCase();
+      if (!teacherFaculty || teacherFaculty !== noteSubject) {
+        return res.status(403).json({ error: "teachers can delete only their assigned subject notes" });
+      }
     }
 
     const result = await pool.query("DELETE FROM notes WHERE id = $1", [id]);
@@ -622,11 +636,23 @@ router.delete("/admin/notes/:id", requireAdmin, async (req, res) => {
   }
 });
 
-router.delete("/admin/notes", requireAdmin, async (_req, res) => {
+router.delete("/admin/notes", requireAdmin, async (req, res) => {
   try {
+    const adminUser = await getAdminAccountById(req.user.id);
+    if (!adminUser) {
+      return res.status(404).json({ error: "admin user not found" });
+    }
+
     await ensureNotesTable();
-    const existing = await pool.query("SELECT file_path FROM notes");
-    await pool.query("DELETE FROM notes");
+    let existing;
+
+    if (adminUser.account_type === "teacher") {
+      existing = await pool.query("SELECT file_path FROM notes WHERE subject = $1", [adminUser.faculty]);
+      await pool.query("DELETE FROM notes WHERE subject = $1", [adminUser.faculty]);
+    } else {
+      existing = await pool.query("SELECT file_path FROM notes");
+      await pool.query("DELETE FROM notes");
+    }
 
     for (const row of existing.rows) {
       const filePath = path.join(uploadsDir, row.file_path);

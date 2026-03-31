@@ -69,7 +69,8 @@ function TeacherCourse({ onBackHome, onBackCourses, onLogout, userName, token, o
   }, [menuOpen]);
 
   function loadUploads() {
-    fetch(`${API_BASE}/api/notes`)
+    const params = normalizedFaculty ? `?subject=${encodeURIComponent(normalizedFaculty)}` : "";
+    fetch(`${API_BASE}/api/notes${params}`)
       .then((response) => response.json())
       .then((data) => setUploads(Array.isArray(data) ? data : []))
       .catch(() => setUploads([]));
@@ -77,7 +78,7 @@ function TeacherCourse({ onBackHome, onBackCourses, onLogout, userName, token, o
 
   useEffect(() => {
     loadUploads();
-  }, []);
+  }, [normalizedFaculty]);
 
   const normalizedFaculty = String(faculty || "").trim();
 
@@ -310,7 +311,7 @@ function TeacherCourse({ onBackHome, onBackCourses, onLogout, userName, token, o
                 className="primary-btn admin-approve-all-btn"
                 onClick={onDeleteAll}
               >
-                Delete All
+                Delete All {normalizedFaculty || ""}
               </button>
             )}
           </div>
