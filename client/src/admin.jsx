@@ -269,7 +269,7 @@ function AdminPanel({ token, onLogout, onBackHome }) {
             {pendingStudentsCount > 0 && (
               <button
                 type="button"
-                className="primary-btn admin-approve-all-btn"
+                className="admin-mini-btn admin-approve admin-approve-all-btn"
                 onClick={approveAllStudents}
                 disabled={loading}
               >
