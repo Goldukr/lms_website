@@ -260,7 +260,7 @@ function AdminCourse({ onBackHome, onBackCourses, onLogout, userName, token, onG
             {uploads.length > 0 && (
               <button
                 type="button"
-                className="primary-btn admin-approve-all-btn"
+                className="admin-mini-btn admin-delete admin-approve-all-btn"
                 onClick={onDeleteAll}
               >
                 Delete All
