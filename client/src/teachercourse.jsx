@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./course.css";
-import { API_BASE } from "./api";
+import { API_BASE, apiUrl } from "./api";
 
 const NAV_ITEMS = ["Home", "Teacher", "Test Series", "About Us"];
 const COURSE_OPTIONS = ["11 NEET", "11 JEE-Advance", "12 NEET", "12 JEE-Advance", "NEET Dropper", "JEE Dropper", "Class 7", "Class 8", "Class 9", "Class 10"];
@@ -340,7 +340,7 @@ function TeacherCourse({ onBackHome, onBackCourses, onLogout, userName, token, o
                 <button
                   type="button"
                   className="admin-course-file-link"
-                  onClick={() => window.open(`${API_BASE}${upload.file_url}`, "_blank", "noopener,noreferrer")}
+                  onClick={() => window.open(apiUrl(upload.file_url), "_blank", "noopener,noreferrer")}
                 >
                   {upload.file_name}
                 </button>

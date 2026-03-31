@@ -6,8 +6,17 @@ function resolveApiBase() {
     return envBase;
   }
 
-  if (typeof window !== "undefined" && window.location.hostname.endsWith("vercel.app")) {
-    return DEFAULT_PRODUCTION_API;
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    const isLocalhost =
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      host === "::1" ||
+      host.endsWith(".local");
+
+    if (!isLocalhost) {
+      return DEFAULT_PRODUCTION_API;
+    }
   }
 
   return "";

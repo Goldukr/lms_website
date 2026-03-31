@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./course.css";
-import { API_BASE } from "./api";
+import { API_BASE, apiUrl } from "./api";
 
 const NAV_ITEMS = ["Home", "Courses", "Test Series", "About Us"];
 
@@ -108,7 +108,7 @@ function Physics({ onBackHome, onBackCourses, courseLabel = "11 NEET", courseQue
               </div>
               {notes.map((note) => (
                 <div key={note.id} className="course-table-row course-table-row-notes">
-                  <a className="course-note-link" href={`${API_BASE}${note.file_url}`} download>
+                  <a className="course-note-link" href={apiUrl(note.file_url)} download>
                     <span>{note.chapter}</span>
                     <span>{note.file_name}</span>
                   </a>
