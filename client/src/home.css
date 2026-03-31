@@ -1383,11 +1383,13 @@ body,
 .admin-query-table {
   display: grid;
   gap: 8px;
+  overflow-x: auto;
 }
 
 .admin-query-row {
   display: grid;
   grid-template-columns: 1fr 1.2fr 0.9fr 2fr 1.3fr auto;
+  min-width: 780px;
   gap: 10px;
   align-items: center;
   padding: 7px 9px;
@@ -1408,14 +1410,6 @@ body,
 }
 
 @media (max-width: 1320px) {
-  .admin-query-header {
-    display: none;
-  }
-
-  .admin-query-row {
-    grid-template-columns: 1fr;
-  }
-
   .admin-query-action-cell {
     justify-content: flex-start;
   }
